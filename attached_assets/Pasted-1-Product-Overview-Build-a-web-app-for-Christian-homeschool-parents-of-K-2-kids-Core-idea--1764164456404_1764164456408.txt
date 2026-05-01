@@ -1,0 +1,495 @@
+1. Product Overview
+Build a web app for Christian homeschool parents of K–2 kids.
+
+Core idea:
+
+Parents create an account and add children.
+
+For each child, parents set:
+
+Grade (K, 1, or 2)
+
+Faith integration level
+
+Learning style
+
+The system uses an AI curriculum engine to generate daily or weekly plans of lessons + activities + quizzes, aligned with:
+
+A non‑denominational, Gospel‑centered Christian worldview
+
+Hands‑on / Montessori‑style learning
+
+Low screen time and real‑world activities
+
+Children log in to a simple portal, see “Today’s Tasks”, complete them, take simple quizzes, and earn points + badges.
+
+This is MVP Phase 1 only – no marketplace, no school admin, no creators yet.
+
+2. Tech Stack (Suggestion – adjust only if necessary)
+Frontend: React (or Next.js in SPA mode), TypeScript preferred.
+
+Backend: Node.js + Express (or Next.js API routes).
+
+Database: PostgreSQL (or another simple relational DB).
+
+Auth: Basic email/password for parents, username + PIN for kids.
+
+AI: Use a single “generatePlan” backend endpoint that calls the AI model (you can stub this if real AI isn’t wired yet, but structure for future integration).
+
+Keep the architecture simple and clear.
+
+3. Roles & Auth
+Roles:
+
+PARENT
+
+CHILD
+
+Parent Auth:
+
+Sign up / log in with email + password.
+
+Child Auth:
+
+Each child has:
+
+username
+
+4‑digit PIN
+
+Child logs in via a simplified child login screen.
+
+4. Data Model (High‑Level)
+Create tables/collections roughly like this:
+
+User
+
+id
+
+email
+
+passwordHash
+
+role = "PARENT"
+
+createdAt, updatedAt
+
+Child
+
+id
+
+parentId (FK → User)
+
+name
+
+grade ("K" | "1" | "2")
+
+username
+
+pinHash
+
+createdAt, updatedAt
+
+ChildSettings
+
+id
+
+childId (FK → Child)
+
+faithMode ("FULL_DISCIPLESHIP" | "FAITH_FORWARD" | "VALUES_ONLY")
+
+learningStyle ("HANDS_ON_MONTESSORI" | "BALANCED" | "DIGITAL_LIGHT")
+
+subjectsEnabled (array; default: Reading, Math, Science, Character)
+
+Plan
+
+id
+
+childId
+
+type ("DAILY" or "WEEKLY")
+
+startDate (ISO date)
+
+endDate (for weekly)
+
+generatedAt
+
+generatedBy (string, e.g. "AI")
+
+Task
+
+id
+
+planId
+
+childId
+
+date (within the plan window)
+
+subject ("READING" | "MATH" | "SCIENCE" | "CHARACTER")
+
+title
+
+objective
+
+activityType ("HANDS_ON" | "SCREEN_OFF" | "QUIZ" | "REFLECTION" | "READING")
+
+instructionsForChild
+
+instructionsForParent (nullable)
+
+scriptureReference (nullable)
+
+scriptureText (nullable)
+
+reflectionPrompt (nullable)
+
+quizId (nullable)
+
+status ("PENDING" | "COMPLETED")
+
+completedAt (nullable)
+
+Quiz
+
+id
+
+taskId
+
+questions (JSON array)
+
+QuizQuestion (can be embedded in the JSON)
+
+type ("MULTIPLE_CHOICE" | "YES_NO" | "SHORT_TEXT")
+
+questionText
+
+options (array for MC)
+
+correctAnswer (string or index)
+
+RewardState
+
+id
+
+childId
+
+points
+
+badges (JSON array of codes)
+
+lastUpdated
+
+Use a simple migration/schema system.
+
+5. Parent Experience (UI & Flows)
+5.1 Parent Dashboard
+After login, parent sees:
+
+List of children:
+
+Name
+
+Grade
+
+Quick stats (today’s completion %, total points)
+
+Actions:
+
+Add Child
+
+Edit Child
+
+View Plans
+
+5.2 Add/Edit Child Screen
+Fields:
+
+Child name
+
+Grade (K, 1, 2)
+
+Username
+
+PIN (4 digits)
+
+Faith mode:
+
+Full discipleship
+
+Faith‑forward
+
+Values only
+
+Learning style:
+
+Hands‑on / Montessori
+
+Balanced
+
+Digital‑light
+
+Save child + settings.
+
+5.3 Generate Plan Screen (Per Child)
+On a child detail page:
+
+Buttons:
+
+“Generate Today’s Plan”
+
+“Generate This Week’s Plan”
+
+When clicked:
+
+Call backend endpoint POST /api/generate-plan with:
+
+childId
+
+planType = "DAILY" or "WEEKLY".
+
+Show a loading state, then display generated tasks by day (for weekly) or for today only (daily).
+
+Parent should be able to see tasks (title, subject, basic description). If it’s quick to implement, allow them to toggle tasks as “active/inactive” for the child, but this can be optional.
+
+5.4 Basic Progress View
+For each child, show:
+
+Last 7 days, tasks assigned vs completed.
+
+Total points.
+
+Badges earned.
+
+Simple bar or table view is fine.
+
+6. Child Experience (UI & Flows)
+6.1 Child Login
+Separate child login screen:
+
+Enter username
+
+Enter PIN
+
+On success, redirect to child home.
+
+6.2 Child Home – “Today’s Tasks”
+Show:
+
+Child’s name
+
+Total points
+
+Compact view of earned badges (icons or labels)
+
+Then:
+
+List of today’s tasks (from the active plan for today):
+
+Subject icon (e.g., book, plus sign, leaf, heart)
+
+Task title
+
+Status (e.g., checkbox or pill)
+
+Clicking a task opens Task Detail.
+
+6.3 Task Detail
+If activityType is hands‑on/screen‑off:
+
+Show instructionsForChild (1–3 simple sentences).
+
+Optional scriptureReference and scriptureText (very short).
+
+Button: “I Did This” → marks task complete, triggers rewards.
+
+If task has a quiz:
+
+Show quiz UI (simple, one page is fine for MVP).
+
+Question types:
+
+Multiple choice
+
+Yes/No
+
+Short text
+
+On submit:
+
+Record score.
+
+Mark quiz as done.
+
+Award points.
+
+If task has reflectionPrompt:
+
+Show prompt; for MVP, allow a simple text box or just a “Done” button.
+
+6.4 Rewards
+When a task is completed:
+
+Add 10 points (configurable constant).
+
+If task includes quiz, optionally add +5 bonus points.
+
+Badges (hardcode for MVP):
+
+FIRST_TASK_COMPLETE
+
+FIRST_DAY_COMPLETE (all tasks for a day done)
+
+FIVE_DAYS_COMPLETE
+
+NATURE_EXPLORER (complete X science tasks)
+
+KIND_HEART (complete X character tasks)
+
+Show a small popup or banner when a badge is earned.
+
+7. AI Curriculum Engine – Backend Endpoint
+Implement backend endpoint:
+
+POST /api/generate-plan
+
+Input JSON:
+
+{
+  "childId": "uuid",
+  "planType": "DAILY" | "WEEKLY"
+}
+Backend steps:
+
+Load child, settings, and enabled subjects.
+
+Build a prompt for the AI model with:
+
+Grade (K, 1, or 2)
+
+planType
+
+faithMode
+
+learningStyle
+
+subjects list
+
+Call AI model to return a structured JSON representing days + tasks.
+
+Validate/sanitize the output.
+
+Create a Plan record and child Task + Quiz records.
+
+Return the created plan + tasks to the frontend.
+
+AI System Prompt (Conceptual)
+You are an assistant that generates curriculum for K–2 Christian homeschoolers.
+
+Worldview: non‑denominational, Gospel‑centered Christian.
+
+Do NOT teach other religions as valid spiritual paths.
+
+No political content.
+
+Emphasize:
+
+Hands‑on, real‑world, Montessori‑style learning.
+
+Many screen‑off activities (using objects like beans, blocks, paper, leaves).
+
+Simple language for K–2.
+
+You receive:
+
+Grade (K, 1, or 2).
+
+Subjects to cover: Reading/Language Arts, Math, Science (nature), Character/Values.
+
+Faith integration level:
+
+FULL_DISCIPLESHIP: Frequent explicit Scripture and Jesus‑centered connections.
+
+FAITH_FORWARD: Regular Scripture/value tie‑ins, not every task.
+
+VALUES_ONLY: Focus on Christian values (kindness, honesty, diligence, stewardship, gratitude, etc.), with rare or no explicit Scripture.
+
+Learning style:
+
+HANDS_ON_MONTESSORI: Prefer physical activities, step‑by‑step tasks, child choice.
+
+BALANCED: Mix of hands‑on and simple reading.
+
+DIGITAL_LIGHT: Mostly hands‑on and reading, minimal device interaction.
+
+Output a JSON object with:
+
+{
+  "planType": "DAILY" | "WEEKLY",
+  "days": [
+    {
+      "date": "YYYY-MM-DD",
+      "tasks": [
+        {
+          "subject": "MATH" | "READING" | "SCIENCE" | "CHARACTER",
+          "title": "short title",
+          "objective": "short learning objective",
+          "activityType": "HANDS_ON" | "SCREEN_OFF" | "QUIZ" | "REFLECTION" | "READING",
+          "instructionsForChild": "1–3 simple sentences",
+          "instructionsForParent": "optional short guidance",
+          "scriptureReference": "optional",
+          "scriptureText": "optional short verse snippet",
+          "reflectionPrompt": "optional",
+          "quiz": {
+            "questions": [
+              {
+                "type": "MULTIPLE_CHOICE" | "YES_NO" | "SHORT_TEXT",
+                "questionText": "string",
+                "options": ["A", "B", "C"],
+                "correctAnswer": "B"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+Ensure:
+
+Content is age‑appropriate.
+
+Tone is encouraging and gentle.
+
+Scripture (when included) is short and K–2 friendly.
+
+Activities are realistically doable at home with common materials.
+
+The backend should parse this JSON and create Plan + Task + Quiz records.
+
+If actual AI integration isn’t available, stub this with hardcoded sample JSON that follows this structure.
+
+8. Build Order / Milestones
+Implement in this rough order:
+
+Project scaffolding, auth, and database models.
+
+Parent auth + child CRUD + settings.
+
+/api/generate-plan endpoint with stubbed AI JSON.
+
+Parent UI for generating and viewing plans.
+
+Child auth + “Today’s Tasks” + task completion.
+
+Quiz UI + reward points + badge logic.
+
+Basic progress view for parents.
+
+UI polish for K–2 (large buttons, simple layout, calming colors).
+
+Make sure code is clean, modular, and easy to extend for future features (more grades, marketplace, etc.), but do not prematurely build those features now.
+
+End of spec. Please begin scaffolding the project and implement the above MVP.

@@ -1,0 +1,245 @@
+This is the official instruction set for building the adaptive K–2 learning system.
+1. Scope
+Neulearn is currently focused on grades K–2 only.
+The system must implement:
+
+Adaptive lessons using OpenAI
+
+Learner profiles
+
+Lesson templates with difficulty & modes
+
+Gamified “Learning Journey” progression
+
+No‑wrong‑answer UX
+
+AI‑generated hints & explanations
+
+Auto‑adjusting difficulty and skill mastery
+
+2. Data Models to Implement
+2.1 Learner Profile (K–2 Only)
+Create a learnerProfile model with the following fields:
+
+{
+  "learnerId": "string",
+  "age": 5,
+  "gradeBand": "K | 1 | 2",
+  
+  "readingStage": "pre_reader | early_reader | fluent_for_grade",
+  "mathStage": "within_5 | within_10 | within_20",
+
+  "preferredModes": ["hands_on", "visual", "story"],
+  "sessionLengthMinutes": 10,
+
+  "confidence": 0.0,                    
+  "lastDifficultyOutcome": "too_easy | just_right | too_hard",
+
+  "journeyStage": 1,
+  "journeyPosition": 0,
+  "growthPoints": 0,
+
+  "streakDays": 0
+}
+2.2 Lesson Template Schema
+This template is NOT a full lesson — it is a structured blueprint that AI will fill in.
+
+{
+  "lessonId": "k_math_add_within_10_v1",
+  "gradeBand": "K-2",
+
+  "targetSkill": "math.addition_within_10",
+  "objective": "Add numbers within 10 using objects and pictures.",
+
+  "difficultyLevels": {
+    "easy": { "numberRange": [0,5], "problemCount": 4 },
+    "medium": { "numberRange": [0,10], "problemCount": 6 },
+    "hard": { "numberRange": [0,10], "problemCount": 8, "includesMissingAddend": true }
+  },
+
+  "modes": {
+    "hands_on": { "instructionsPattern": "Use objects to act out problems." },
+    "visual": { "instructionsPattern": "Draw or use dots to model the problems." },
+    "story": { "instructionsPattern": "Wrap problems in a simple child-friendly story." }
+  },
+
+  "assessmentBank": {
+    "formative": [],
+    "checkpoint": [],
+    "challenge": []
+  }
+}
+2.3 Lesson Instance Schema (AI‑Generated Per Child)
+A fully adapted lesson the child sees.
+
+{
+  "instanceId": "string",
+  "learnerId": "string",
+  "lessonTemplateId": "string",
+
+  "difficultyUsed": "easy | medium | hard",
+  "modeUsed": "hands_on | visual | story",
+
+  "steps": [
+    {
+      "stepNumber": 1,
+      "parentInstructions": "string",
+      "childTask": "string"
+    }
+  ],
+
+  "assessment": {
+    "questions": [
+      { "questionId": "q1", "prompt": "string", "answer": "number" }
+    ]
+  },
+
+  "createdAt": "datetime"
+}
+2.4 Attempt Logging Schema (Supports No‑Wrong‑Answer Model)
+{
+  "attemptId": "string",
+  "lessonInstanceId": "string",
+  "learnerId": "string",
+
+  "questionId": "string",
+  "childAnswer": "number|string",
+  "correctAnswer": "number|string",
+
+  "isCorrect": true,
+  "misconceptionTag": "counting_error | place_value | guessing | skipped_step",
+
+  "timestamp": "datetime"
+}
+3. Core Adaptive Engine: buildLessonInstance()
+Create a backend function:
+
+async function buildLessonInstance(learnerProfile, lessonTemplate) { ... }
+3.1 Required Behavior
+Choose difficulty based on:
+
+lastDifficultyOutcome
+
+skill stage (readingStage / mathStage)
+
+Choose mode based on:
+
+learnerProfile.preferredModes
+
+Adjust length by:
+
+sessionLengthMinutes (keep lessons ~10 minutes)
+
+Call OpenAI with:
+
+the lesson template
+
+learner profile
+
+strict JSON schema
+
+instructions to generate:
+
+3–4 kid-friendly steps
+
+a short parent note
+
+3–5 assessment items
+
+3.2 Validation
+Validate JSON from OpenAI
+
+Retry if malformed
+
+Save lessonInstance to DB
+
+4. No‑Wrong‑Answer System
+Wrong answers must never show failure to the child.
+
+4.1 On wrong answer:
+Call an AI endpoint:
+
+Input:
+
+{
+  "question": "...",
+  "correctAnswer": 10,
+  "childAnswer": 7,
+  "gradeBand": "1",
+  "modeUsed": "hands_on"
+}
+AI Output must include:
+
+{
+  "misconception_tag": "counting_error",
+  "explanation_for_child": "Let's count each block slowly together!",
+  "hint": "Touch each object as you count so you don’t skip any.",
+  "next_action": "simpler_example | guided_practice | pivot_down_difficulty"
+}
+4.2 The UI should display only:
+Kind explanations
+
+Gentle encouragement
+
+A simple retry or guided example
+Never a red X.
+
+4.3 Backend Updates
+Log attempt
+
+Adjust skill_mastery (rule-based for now)
+
+Update lastDifficultyOutcome:
+
+multiple wrong → "too_hard"
+
+fast correct → "too_easy"
+
+5. Gamified Journey System
+Each completed lesson must:
+
+Move the avatar forward (journeyPosition += 1)
+
+Award “growth points”
+
+Trigger animations/visual transitions in UI
+
+Every N positions:
+
+Increase journeyStage
+
+Unlock cosmetic rewards
+
+The journey does not slow down based on wrong answers — growth is consistent and encouraging.
+
+6. Frontend Requirements
+Lesson UI must support:
+3–4 steps dynamically rendered from JSON
+
+Progress bar
+
+Assessment section
+
+Hint / explanation surfaces
+
+Avatar journey map visible after lesson completion
+
+Parent View Must Show:
+gentle progress summaries
+
+no complex analytics needed yet
+
+7. AI Integration Requirements
+All AI calls must:
+
+Use the existing OpenAI integration
+
+Follow strict JSON schemas
+
+Include Neulearn voice and pedagogy constraints
+
+For safety:
+
+All outputs must be validated server-side
+
+No direct AI calls from frontend

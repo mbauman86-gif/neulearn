@@ -1,0 +1,116 @@
+We already have the full Neulearn brand kit and logo. 
+DO NOT generate new logos or brand assets. 
+Your job is to integrate the existing Neulearn brand identity into the entire application UI.
+
+Here are the brand rules you MUST follow:
+
+---------------------------------
+NEULEARN BRAND INTEGRATION RULES
+---------------------------------
+
+1. COLORS (import these as design tokens)
+-----------------------------------------
+--color-orange-start: #FFB432;
+--color-orange-mid:   #FF8A27;
+--color-lime-mid:     #90D18B;
+--color-teal-end:     #00B7A2;
+
+--text-primary:       #0C3A3E;
+--surface-light:      #F8FAF9;
+--surface-gray:       #EBEEF0;
+
+GRADIENT:
+linear-gradient(90deg, 
+  #FFB432 0%, 
+  #FF8A27 30%, 
+  #90D18B 55%, 
+  #00B7A2 100%
+);
+
+Use this gradient ONLY for:
+- Primary buttons
+- Progress bars
+- Logo displays
+- Key callouts or highlights
+
+Use teal (#00B7A2) for all primary UI accents.
+
+2. TYPOGRAPHY (use these everywhere)
+-----------------------------------------
+Headings: Poppins Bold
+Body: Inter Regular or Medium
+Labels / Numbers: Nunito
+
+Rules:
+- Keep headings large, round, and modern.
+- Use Inter for readable UI text.
+- Maintain consistent line-height and spacing.
+
+3. LOGO USAGE RULES
+-----------------------------------------
+- Do NOT modify the logo, arrow, outline thickness, or gradient colors.
+- Maintain padding equal to the height of lowercase “n”.
+- Minimum digital size: 48px height.
+- Use full-color logo on white/light backgrounds only.
+- Use white version on teal or dark backgrounds.
+
+4. COMPONENT STYLING
+-----------------------------------------
+Buttons:
+- Rounded corners (8–12px)
+- Primary = gradient background + white text
+- Secondary = teal border + teal text + white background
+
+Inputs:
+- Rounded corners (6–10px)
+- Soft gray background (#EBEEF0)
+- Focus state = teal border
+
+Cards:
+- White background
+- Soft shadow (very subtle)
+- Rounded edges
+
+Navigation:
+- Teal accent highlights
+- Use Poppins for section titles
+
+Progress Indicators:
+- Always use the Neulearn gradient
+- Rounded ends
+
+5. ICONS AND ILLUSTRATIONS
+-----------------------------------------
+- Use soft-rounded geometric icon style.
+- Colors should come from the brand palette.
+- No sharp edges except for the arrow motif.
+- Keep visual style modern, clean, and warm.
+
+6. KID UI VARIATION (if applicable)
+-----------------------------------------
+Use brighter versions of brand colors:
+- Blue: #4FA3FF
+- Yellow: #FFD74A
+- Orange: #FF9B42
+- Green teal variants
+
+Keep text large, simple, and friendly.
+
+7. IMPLEMENTATION TASK
+-----------------------------------------
+Integrate all the above branding rules into:
+- Global CSS variables (or Tailwind config)
+- Button components
+- Navigation
+- Forms
+- Cards
+- Icons
+- App header & footer
+- Dashboard screens
+- Progress bars
+- Loading animations
+
+Refactor all existing components to match the Neulearn brand system.
+Do NOT create new logo artwork.
+
+Output the updated code files, component styles, and theme tokens.

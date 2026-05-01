@@ -1,0 +1,124 @@
+We need to fix and update the Neulearn lesson-generation and delivery system. 
+There are two major problems right now:
+
+1) Parent-generated lessons are NOT showing up correctly for the child.
+2) The AI is only generating the “teaching” portion and is NOT generating any action steps or a clear learning goal.
+
+We need to fully implement the adaptive K–2 lesson engine with the correct data pipeline and AI prompt structure.
+
+-------------------------------------------
+PART 1 — FIX PARENT → CHILD PIPELINE
+-------------------------------------------
+
+When a parent creates a lesson, it MUST create a ParentLesson record with:
+
+- parentLessonId
+- parentId
+- targetLearnerId
+- subject
+- skillTag (ex: "math.addition_within_10")
+- parentNotes (free text description)
+- constraints (sessionLengthMinutes, preferredMode, etc.)
+
+After saving ParentLesson, the backend must immediately:
+CALL buildLessonInstance(learnerProfile, parentLesson)
+
+This generates ONE lessonInstance for the child.
+
+The child app must ALWAYS load the stored lessonInstance using:
+- parentLessonId
+- learnerId
+
+Do NOT generate a fresh AI lesson on the child’s side. 
+The child should always see the adapted lessonInstance tied to the parent’s request.
+
+-------------------------------------------
+PART 2 — REQUIRED LESSONINSTANCE FORMAT
+-------------------------------------------
+
+Each AI-generated lessonInstance MUST include these **four required sections**:
+
+{
+  "goal": string,
+  "teach": { "text": string },
+  "do": [
+    {
+      "stepNumber": number,
+      "parentInstructions": string,
+      "childTask": string
+    }
+  ],
+  "check": {
+    "questions": [
+      { "questionId": string, "prompt": string, "answer": string }
+    ]
+  }
+}
+
+Rules:
+
+1) goal  
+   - MUST begin with: 
+     "By the end of this lesson, {childName} will be able to..."
+   - Should clearly state the skill the child will learn.
+
+2) teach  
+   - Short, K–2 friendly explanation.
+
+3) do  
+   - MUST contain 2–4 actionable steps.
+   - Each step MUST include both:
+        parentInstructions
+        childTask
+
+4) check  
+   - MUST contain 2–3 simple questions with correct answers.
+   - This powers the adaptive engine, even though the child UI remains positive.
+
+If ANY of these fields are missing, the AI output must be rejected and regenerated.
+
+-------------------------------------------
+PART 3 — AI PROMPT WE WANT YOU TO USE
+-------------------------------------------
+
+Use the following prompt in the backend when generating a lessonInstance:
+
+SYSTEM MESSAGE:
+“You are Neulearn's curriculum engine for grades K–2... (full prompt provided previously).”
+
+USER MESSAGE TEMPLATE:
+Provide the learner_profile, parent_lesson, and lesson_template JSON blocks here 
+and request output in the exact schema above. 
+Require goal + teach + do + check.
+
+-------------------------------------------
+PART 4 — UPDATE CHILD VIEW
+-------------------------------------------
+
+The child interface MUST display:
+- goal (at top)
+- teach section
+- each do step (2–4)
+- check questions at end
+
+The child should NEVER see red X or incorrect markers.
+Feedback must remain gentle and supportive.
+
+-------------------------------------------
+PART 5 — BACKEND CONNECTIONS
+-------------------------------------------
+
+On lesson completion:
+- Update learnerProfile (skillMastery, confidence, lastDifficultyOutcome)
+- Update journeyPosition and growthPoints
+- Keep the journey gamified and positive
+
+-------------------------------------------
+
+The main issues to fix immediately:
+
+1. The parent-created lesson must drive the child-visible lessonInstance.  
+2. LessonInstance MUST include a GOAL, DO steps, and CHECK questions — not just teaching text.  
+3. The backend must enforce the JSON schema and retry AI generation if required fields are missing.
+
+Please implement these corrective changes and rebuild the ParentLesson → LessonInstance → Child flow accordingly.

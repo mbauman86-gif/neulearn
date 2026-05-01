@@ -1,0 +1,232 @@
+HE PARENT COMMUNITY ECOSYSTEM (NEULEARN V1 → V2)
+This system has 4 core pillars:
+
+Parent Profiles & Discovery
+
+Community Groups (Local + Virtual)
+
+Discussions & Threads (Topic-Based)
+
+Co‑Ops, Meetups & Buddy‑Family Connections
+
+Let’s break down each one into buildable components.
+
+1️⃣ Parent Profiles & “Discovery Layer”
+This is the foundation.
+
+🔹 Parent profile should include:
+First name
+
+City & State (optional, toggle on/off)
+
+Homeschool style (Classical, Charlotte Mason, Unschool, etc.)
+
+Child age ranges & interests
+
+Parent interests (STEM, nature school, reading groups, faith-based, etc.)
+
+KEY: No exact addresses. No precise location.
+Just enough to connect families safely.
+
+🧭 Discovery Options (V1)
+Parents can discover:
+
+Families in my state
+
+Families within 50 miles (city-level only)
+
+Families whose kids share the same interests
+
+Families in the same co-op, church group, or pathway
+
+Families whose kids are Buddies
+
+This gives community WITHOUT exposing sensitive data.
+
+2️⃣ Community Groups (The Heart of Parent Engagement)
+Parents need spaces where they can gather around shared identity markers.
+
+Core Group Types to Build:
+🔹 Local Groups (Auto-Generated)
+“Neulearn Parents in Texas”
+
+“Neulearn Parents in Florida Panhandle”
+
+“Neulearn Parents in SoCal”
+
+Automatically created based on volume.
+
+🔹 Virtual Co-Ops (Parent Created)
+Parents can create:
+
+Reading clubs
+
+STEM builders group
+
+Scripture memory group
+
+Neurodivergent support group
+
+Learning pathway groups (e.g., Maker Families, Artist Families)
+
+Each group has:
+
+A description
+
+A weekly challenge or discussion
+
+Event calendar
+
+Parent moderators (approved)
+
+🔹 Organization Groups
+For:
+
+Churches using Neulearn
+
+Micro-schools
+
+Pods
+
+Co-ops
+
+This becomes a distribution channel for you.
+
+3️⃣ Discussion Threads (Parent-Friendly, Not Facebook-Messy)
+This is where you avoid building “endless feeds” and instead implement structured discussion spaces, similar to:
+
+Reddit threads
+
+Slack channels
+
+Geneva community rooms
+
+Mighty Networks topics
+
+Discussion Types:
+Questions
+
+Announcements
+
+Resource shares
+
+Lesson + teaching tips
+
+Wins & celebrations
+
+Parent-to-parent encouragement
+
+Parents can sort threads by:
+
+New
+
+Most active
+
+Most helpful
+
+No algorithm needed for V1.
+
+4️⃣ Parent Connection → Buddy Connection → Family Connection
+This is the magic of your ecosystem.
+
+A parent should be able to:
+
+✔️ Connect with another parent
+from:
+
+Their child’s Buddy connections
+
+Same local group
+
+Shared co-op
+
+Shared learning pathway
+
+✔️ Start a Parent-to-Parent Chat
+BUT only with:
+
+Guardrails
+
+Message filters
+
+Optional AI moderation
+
+A “report” button
+
+No images from camera roll
+
+✔️ Create or join a Virtual Co-Op
+Parents can:
+
+Start a weekly Zoom-style meet
+
+Assign group challenges
+
+Share printable resources
+
+Host “show & tell”
+
+You can later integrate:
+
+Neulearn Meetups
+
+Shared family badges (co-op achievements)
+
+5️⃣ Local Community Features (Optional V2)
+🔹 Map View (Safe-Level Resolution)
+Show dots or clusters of families in a region
+
+No addresses
+
+No home radius
+
+This is similar to how:
+
+Peanut
+
+Nextdoor (for adults)
+
+Strava heatmaps
+protect privacy.
+
+🔹 In-Person Meetup Tools
+Parents can:
+
+Create an event (“Nature Walk Friday”)
+
+Invite local Neulearn families
+
+Set location as a public park or library
+
+Message only event attendees
+
+This builds regional micro-communities, which massively improves retention.
+
+6️⃣ Super Safe Design Rules (Important)
+No:
+
+Free-for-all messaging
+
+Media uploads that aren't filtered
+
+Sharing personal addresses
+
+Child names shown publicly
+
+Access to kid profiles from outside approved buddy connections
+
+Unmoderated group creation
+
+Yes:
+
+AI + human moderation
+
+Parents-only areas
+
+Opt-in visibility
+
+Group codes for joining
+
+Parent approval for any family connection
+
+Safety prompts (“Don’t share personal details”)

@@ -1,0 +1,174 @@
+Message to Replit: “Neulearn K–5 Learning OS Build Plan”
+We are refocusing Neulearn on being a full K–5 learning system, not just an app with lessons.
+
+The big goal
+Build a “learning operating system” that:
+
+knows the child’s exact skill levels,
+
+builds a daily learning plan automatically,
+
+teaches each skill using a repeatable lesson format,
+
+gates progression with mastery checks (not seat time),
+
+provides parent‑visible proof of learning.
+
+This should feel like a guided learning “day” for the child, not a library of content.
+
+1) Core concept: Skill Graph + Mastery Engine
+We need a K–5 skill graph (starting with Math + Reading/ELA first).
+
+Each skill must have:
+
+a clear name (small + measurable)
+
+prerequisites (what must be mastered first)
+
+domain and grade band
+
+mastery states (Not Started → Developing → Proficient → Fluent → Transfer)
+
+The platform must track each child’s status per skill and use that to decide what to teach next.
+
+Ask: Please plan the data structures and admin tooling that let us create/edit this skill graph and prerequisites.
+
+2) The “Daily Queue” (our Dash equivalent)
+Each child should log in and see a Today Queue generated automatically:
+
+Core Learning (new skills)
+
+Spiral Review (practice older skills to retain)
+
+Apply/Project (real-world transfer / performance task)
+
+The queue is created from:
+
+what the child is ready for next (prereqs met)
+
+what needs review (skills they’re at risk of forgetting)
+
+what’s overdue (unfinished or struggling skills)
+
+Ask: Please design the logic and screens that generate and display this daily queue.
+
+3) Standard Lesson Engine (used for every skill)
+Every lesson follows the same flow:
+
+Hook (curiosity)
+
+Explore (guided discovery)
+
+Practice (repetition with variation)
+
+Check (mastery check / short assessment)
+
+Apply (transfer task / artifact)
+
+This structure stays consistent, but the “difficulty and independence” scales by age:
+
+K–1: highly guided, interactive
+
+2–3: more independence, short writing
+
+4–5: multi-step reasoning, longer tasks/projects
+
+Ask: Please plan a lesson system where every lesson instance can be generated from templates but always follows this same 5-step structure.
+
+4) Mastery gates (progression is earned)
+Children should not advance because they “completed a lesson.”
+They advance when they demonstrate mastery.
+
+We need:
+
+built-in mastery checks for each skill
+
+a rule for when a skill becomes “Proficient”
+
+delayed retention checks (example: a quick review 2–7 days later)
+
+evidence captured (work samples/artifacts)
+
+Ask: Please plan how mastery is calculated, stored, and used to unlock the next skills.
+
+5) Anti‑stuck coaching (system detects struggle)
+We want the system to detect when a child is stuck or guessing and respond automatically.
+
+Signals include:
+
+repeated wrong answers
+
+very fast guessing
+
+long hesitation
+
+repeated hint requests
+
+Responses include:
+
+hints in steps (small → bigger)
+
+show a worked example
+
+micro-remediation lesson
+
+switch modality (visual vs story vs manipulatives)
+
+optional short break and return
+
+Ask: Please plan the “anti-stuck” behaviors and how they plug into lessons without needing a human tutor.
+
+6) Proof of learning (for parents + investors)
+We need a portfolio-like record of learning that’s simple and credible.
+
+Examples of proof:
+
+short writing samples
+
+completed performance tasks
+
+mastery check results
+
+before/after skill growth
+
+Ask: Please plan parent dashboards that show:
+
+what skills are mastered / in progress / struggling
+
+what the child did today
+
+what to do next (support suggestions)
+
+artifacts and evidence
+
+7) What to build first (big picture sequencing)
+We are not asking for an MVP conversation—this is the correct order of foundational systems:
+
+Create Skill Graph v0 for Math K–5 + Reading K–5 (editable by admins)
+
+Build Child Skill Tracking (mastery states per skill)
+
+Build Daily Queue generator + child “Today” screen
+
+Build Lesson Engine templates that always follow the 5-step loop
+
+Build Mastery Gates + retention checks
+
+Build Anti‑stuck coaching flows
+
+Build Proof/Artifacts + Parent dashboard
+
+After these are stable, we expand content breadth (science/social/writing) using the same engine.
+
+8) Neulearn differentiation (important for product decisions)
+We will match a “mastery OS” approach, but differentiate by:
+
+identity-based delivery (Maker/Explorer/Artist/Analyst “modes”)
+
+embedded real-world application inside the engine (not an add-on)
+
+whole-child supports (executive function + emotional support)
+
+safe social reinforcement tied to real progress (optional later)
+
+Ask: Please ensure the architecture supports “identity modes” as a presentation layer without creating separate curricula.

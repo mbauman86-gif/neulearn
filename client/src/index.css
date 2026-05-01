@@ -1,0 +1,556 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+   NEULEARN BRAND SYSTEM
+   ========================================== */
+
+/* LIGHT MODE - Neulearn Brand */
+:root {
+  /* Neulearn Brand Colors */
+  --neulearn-orange-start: #FFB432;
+  --neulearn-orange-mid: #FF8A27;
+  --neulearn-lime-mid: #90D18B;
+  --neulearn-teal: #00B7A2;
+  --neulearn-text-primary: #0C3A3E;
+  --neulearn-surface-light: #F8FAF9;
+  --neulearn-surface-gray: #EBEEF0;
+  
+  /* Neulearn Gradient */
+  --neulearn-gradient: linear-gradient(90deg, #FFB432 0%, #FF8A27 30%, #90D18B 55%, #00B7A2 100%);
+  
+  /* Kid UI Bright Colors */
+  --kid-blue: #4FA3FF;
+  --kid-yellow: #FFD74A;
+  --kid-orange: #FF9B42;
+  --kid-green: #00B7A2;
+
+  /* Elevation System */
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  /* Core Colors - Teal-based primary */
+  --background: 150 25% 97%;
+  --foreground: 185 67% 15%;
+  --border: 210 20% 88%;
+  
+  /* Card styling */
+  --card: 0 0% 100%;
+  --card-foreground: 185 67% 15%;
+  --card-border: 210 20% 93%;
+  
+  /* Sidebar - light clean look */
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 185 67% 15%;
+  --sidebar-border: 210 20% 90%;
+  --sidebar-primary: 172 100% 36%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 172 50% 95%;
+  --sidebar-accent-foreground: 172 100% 30%;
+  --sidebar-ring: 172 100% 36%;
+  
+  /* Popover */
+  --popover: 0 0% 100%;
+  --popover-foreground: 185 67% 15%;
+  --popover-border: 210 20% 91%;
+  
+  /* Primary = Neulearn Teal */
+  --primary: 172 100% 36%;
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary = Dark text color */
+  --secondary: 185 67% 15%;
+  --secondary-foreground: 0 0% 100%;
+  
+  /* Muted */
+  --muted: 210 20% 93%;
+  --muted-foreground: 185 30% 40%;
+  
+  /* Accent = Teal light */
+  --accent: 172 50% 95%;
+  --accent-foreground: 172 100% 30%;
+  
+  /* Destructive */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  
+  /* Form inputs */
+  --input: 210 20% 93%;
+  --ring: 172 100% 36%;
+  
+  /* Charts using brand colors */
+  --chart-1: 172 100% 36%;
+  --chart-2: 117 45% 69%;
+  --chart-3: 40 100% 60%;
+  --chart-4: 26 100% 58%;
+  --chart-5: 213 100% 65%;
+  
+  /* Typography */
+  --font-heading: 'Poppins', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-label: 'Nunito', sans-serif;
+  --font-child: 'Nunito', 'Quicksand', sans-serif;
+  --font-serif: 'Georgia', serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  
+  /* Spacing and radius */
+  --radius: 0.625rem;
+  --spacing: 0.25rem;
+  
+  /* Shadows - subtle and clean */
+  --shadow-2xs: 0 1px 2px 0 rgba(12, 58, 62, 0.03);
+  --shadow-xs: 0 1px 3px 0 rgba(12, 58, 62, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgba(12, 58, 62, 0.05), 0 1px 3px 0 rgba(12, 58, 62, 0.04);
+  --shadow: 0 1px 3px 0 rgba(12, 58, 62, 0.06), 0 1px 2px -1px rgba(12, 58, 62, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(12, 58, 62, 0.07), 0 2px 4px -2px rgba(12, 58, 62, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(12, 58, 62, 0.08), 0 4px 6px -4px rgba(12, 58, 62, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(12, 58, 62, 0.08), 0 8px 10px -6px rgba(12, 58, 62, 0.06);
+  --shadow-2xl: 0 25px 50px -12px rgba(12, 58, 62, 0.15);
+  --tracking-normal: 0em;
+
+  /* Border color fallbacks */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+/* DARK MODE */
+.dark {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+  
+  --background: 185 50% 6%;
+  --foreground: 150 15% 90%;
+  --border: 185 30% 18%;
+  
+  --card: 185 40% 10%;
+  --card-foreground: 150 15% 90%;
+  --card-border: 185 30% 15%;
+  
+  --sidebar: 185 40% 10%;
+  --sidebar-foreground: 150 15% 90%;
+  --sidebar-border: 185 30% 18%;
+  --sidebar-primary: 172 100% 40%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 172 50% 15%;
+  --sidebar-accent-foreground: 172 80% 60%;
+  --sidebar-ring: 172 100% 40%;
+  
+  --popover: 185 40% 8%;
+  --popover-foreground: 150 15% 90%;
+  --popover-border: 185 30% 17%;
+  
+  --primary: 172 100% 40%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 150 15% 90%;
+  --secondary-foreground: 185 50% 8%;
+  
+  --muted: 185 30% 15%;
+  --muted-foreground: 185 15% 55%;
+  
+  --accent: 172 50% 15%;
+  --accent-foreground: 172 80% 60%;
+  
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --input: 185 30% 18%;
+  --ring: 172 100% 40%;
+  
+  --chart-1: 172 100% 45%;
+  --chart-2: 117 45% 60%;
+  --chart-3: 40 100% 55%;
+  --chart-4: 26 100% 55%;
+  --chart-5: 213 100% 60%;
+  
+  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-xs: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35), 0 1px 2px -1px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.45), 0 4px 6px -4px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.35);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  
+  --radius: 0.75rem;
+  --spacing: 0.25rem;
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Headings use Poppins */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+  
+  /* Labels and numbers use Nunito */
+  label, .label, .number, .stat {
+    font-family: var(--font-label);
+  }
+}
+
+/* ==========================================
+   NEULEARN GRADIENT UTILITIES
+   ========================================== */
+@layer utilities {
+  /* Neulearn brand gradient for buttons and progress */
+  .bg-neulearn-gradient {
+    background: var(--neulearn-gradient);
+  }
+  
+  .text-neulearn-gradient {
+    background: var(--neulearn-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Brand color utilities */
+  .bg-neulearn-teal {
+    background-color: var(--neulearn-teal);
+  }
+  
+  .text-neulearn-teal {
+    color: var(--neulearn-teal);
+  }
+  
+  .border-neulearn-teal {
+    border-color: var(--neulearn-teal);
+  }
+  
+  .bg-neulearn-surface {
+    background-color: var(--neulearn-surface-light);
+  }
+  
+  .bg-neulearn-surface-gray {
+    background-color: var(--neulearn-surface-gray);
+  }
+  
+  /* Kid UI bright colors */
+  .bg-kid-blue { background-color: var(--kid-blue); }
+  .bg-kid-yellow { background-color: var(--kid-yellow); }
+  .bg-kid-orange { background-color: var(--kid-orange); }
+  .bg-kid-green { background-color: var(--kid-green); }
+  
+  .text-kid-blue { color: var(--kid-blue); }
+  .text-kid-yellow { color: var(--kid-yellow); }
+  .text-kid-orange { color: var(--kid-orange); }
+  .text-kid-green { color: var(--kid-green); }
+  
+  /* Font utilities */
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+  
+  .font-label {
+    font-family: var(--font-label);
+  }
+}
+
+/* ==========================================
+   ELEVATION SYSTEM
+   ========================================== */
+@layer utilities {
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  .no-default-hover-elevate {}
+  .no-default-active-elevate {}
+
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: -1;
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate),
+  .active-elevate:not(.no-default-active-elevate),
+  .hover-elevate-2:not(.no-default-hover-elevate),
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: 999;
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+    inset: -1px;
+  }
+}
+
+/* ==========================================
+   PROGRESS BAR STYLES
+   ========================================== */
+@layer components {
+  .progress-neulearn {
+    @apply h-2 w-full overflow-hidden rounded-full bg-muted;
+  }
+  
+  .progress-neulearn-bar {
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--neulearn-gradient);
+    transition: width 0.3s ease;
+  }
+}
+
+/* ==========================================
+   KID UI SPECIFIC STYLES
+   ========================================== */
+@layer components {
+  .kid-card {
+    @apply rounded-2xl shadow-lg p-6 transition-transform;
+    background: white;
+  }
+  
+  .kid-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .kid-button {
+    @apply px-6 py-3 rounded-xl font-bold text-lg transition-all;
+    font-family: var(--font-child);
+  }
+  
+  .kid-button-primary {
+    background: var(--neulearn-gradient);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(0, 183, 162, 0.25);
+  }
+  
+  .kid-button-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(0, 183, 162, 0.35);
+  }
+  
+  .kid-button-primary:active {
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   NEULEARN GRADIENT UTILITIES
+   ========================================== */
+@layer utilities {
+  .bg-neulearn-gradient {
+    background: var(--neulearn-gradient);
+  }
+  
+  .text-neulearn-gradient {
+    background: var(--neulearn-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* ==========================================
+   DYSLEXIA-FRIENDLY MODE
+   Research-based adaptations for dyslexic readers
+   ========================================== */
+.dyslexia-mode {
+  /* OpenDyslexic-like font adjustments:
+     - Nunito/Quicksand already has good letter differentiation
+     - Increase letter spacing for better recognition
+     - Increase line height for easier tracking */
+  letter-spacing: 0.05em;
+  word-spacing: 0.15em;
+  
+  /* Larger text for better readability */
+  --dyslexia-text-scale: 1.1;
+}
+
+.dyslexia-mode .font-child {
+  /* Increase base font size for child UI */
+  font-size: calc(1rem * var(--dyslexia-text-scale, 1));
+}
+
+/* Larger text sizes in dyslexia mode */
+.dyslexia-mode h1,
+.dyslexia-mode .text-4xl,
+.dyslexia-mode .text-5xl {
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+.dyslexia-mode h2,
+.dyslexia-mode .text-2xl,
+.dyslexia-mode .text-3xl {
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+}
+
+.dyslexia-mode p,
+.dyslexia-mode .text-base,
+.dyslexia-mode .text-lg,
+.dyslexia-mode .text-xl {
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+}
+
+/* Better paragraph spacing */
+.dyslexia-mode .space-y-4 > * + * {
+  margin-top: 1.5rem;
+}
+
+.dyslexia-mode .space-y-6 > * + * {
+  margin-top: 2rem;
+}
+
+/* Cards get more padding for visual breathing room */
+.dyslexia-mode .kid-card,
+.dyslexia-mode [class*="rounded-2xl"][class*="bg-card"],
+.dyslexia-mode [class*="rounded-2xl"][class*="shadow"] {
+  padding: 1.75rem;
+}
+
+/* Better button readability */
+.dyslexia-mode button,
+.dyslexia-mode .kid-button {
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Task cards in dyslexia mode */
+.dyslexia-mode [data-testid^="task-card"] {
+  padding: 1.5rem;
+}
+
+.dyslexia-mode [data-testid^="task-card"] h3 {
+  font-size: 1.35rem;
+  line-height: 1.5;
+}
+
+/* Badge text more readable */
+.dyslexia-mode .badge,
+.dyslexia-mode [class*="Badge"] {
+  letter-spacing: 0.06em;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
+}
+
+/* Instructions text - critical for reading */
+.dyslexia-mode [data-testid*="instructions"],
+.dyslexia-mode [data-testid*="objective"] {
+  font-size: 1.2rem;
+  line-height: 2;
+  letter-spacing: 0.04em;
+}
+
+/* Scripture text - often longer passages */
+.dyslexia-mode [data-testid*="scripture"],
+.dyslexia-mode .italic {
+  line-height: 2;
+  letter-spacing: 0.03em;
+}
+
+/* Form inputs get better spacing */
+.dyslexia-mode input,
+.dyslexia-mode textarea {
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+  padding: 0.875rem 1rem;
+}
+
+/* Quiz options more readable */
+.dyslexia-mode [data-testid^="quiz-option"] {
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Subtle cream/yellow tint option (reduces visual stress) */
+.dyslexia-mode .bg-background,
+.dyslexia-mode .bg-card {
+  background-color: hsl(48 30% 98%);
+}
+
+.dark.dyslexia-mode .bg-background,
+.dark.dyslexia-mode .bg-card {
+  background-color: hsl(185 40% 8%);
+}

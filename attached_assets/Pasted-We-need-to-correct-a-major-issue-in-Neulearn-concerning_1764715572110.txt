@@ -1,0 +1,125 @@
+We need to correct a major issue in Neulearn concerning lesson delivery. 
+There are THREE issues now:
+
+1) Parent-generated lessons are not showing up on the child’s side.  
+2) The AI is only creating the “teaching” text but is NOT generating DO (action items) or CHECK steps.  
+3) Even when DO steps are generated, they are NOT being carried over or displayed in the child lesson view.
+
+We need all three issues fixed in the system architecture and AI handling.
+
+-------------------------------------------
+PART 1 — FIX PARENT → CHILD PIPELINE
+-------------------------------------------
+
+When a parent creates a lesson, the system MUST:
+
+1. Create a ParentLesson record containing:
+   - parentLessonId
+   - parentId
+   - targetLearnerId
+   - subject
+   - skillTag
+   - parentNotes
+   - constraints (sessionLengthMinutes, preferredMode, etc.)
+
+2. Immediately call:
+   buildLessonInstance(learnerProfile, parentLesson)
+
+3. Save the resulting lessonInstance to the database.
+
+4. The child app MUST retrieve THAT exact lessonInstance by:
+   - parentLessonId
+   - learnerId
+
+Do NOT regenerate or modify a new lesson on the child’s side.
+
+-------------------------------------------
+PART 2 — LESSONINSTANCE MUST INCLUDE ALL FOUR SECTIONS
+-------------------------------------------
+
+Every lessonInstance MUST include:
+
+{
+  "goal": string,
+  "teach": { "text": string },
+  "do": [
+    {
+      "stepNumber": number,
+      "parentInstructions": string,
+      "childTask": string
+    }
+  ],
+  "check": {
+    "questions": [
+      {
+        "questionId": string,
+        "prompt": string,
+        "answer": string
+      }
+    ]
+  }
+}
+
+If ANY field is missing, the backend must reject the output and retry the AI call.
+
+-------------------------------------------
+PART 3 — AI MUST GENERATE ACTION ITEMS, AND THEY MUST NOT BE LOST
+-------------------------------------------
+
+This is where the current issue is occurring.
+
+REQUIRED FIXES:
+
+1. The AI prompt MUST require DO steps (2–4 action items).  
+2. The backend MUST validate that DO steps exist.  
+3. The DO steps MUST be saved in the lessonInstance in the DB.  
+4. The child view MUST render these DO steps exactly as stored in lessonInstance.  
+   - No filtering
+   - No overwriting
+   - No fallback template
+
+This ensures the child sees the action items created from the parent’s lesson.
+
+-------------------------------------------
+PART 4 — AI PROMPT TO USE
+-------------------------------------------
+
+Use the provided system + user prompt where the DO section is mandatory.
+The DO section must contain 2–4 structured steps with BOTH:
+- parentInstructions
+- childTask
+
+If missing, regenerate.
+
+-------------------------------------------
+PART 5 — FRONTEND FIX FOR DO STEPS
+-------------------------------------------
+
+The child UI must:
+
+- Display the goal at the top.
+- Display the teach text.
+- Display ALL DO steps in sequence exactly as stored in lessonInstance.
+- Display the CHECK questions at the end.
+
+Ensure the child UI is reading the DO steps from the stored lessonInstance, not from any other source.
+
+-------------------------------------------
+PART 6 — BACKEND PROCESSING
+-------------------------------------------
+
+When the child completes a lesson:
+- Update learnerProfile (skill mastery, difficulty outcome, confidence)
+- Update journeyPosition and growthPoints
+
+No changes needed here yet, but ensure all steps were visible to the child first.
+
+-------------------------------------------
+
+Summary:
+We need to fix:
+- ParentLesson → LessonInstance linkage,
+- Mandatory generation of DO steps,
+- And crucially: DO steps must persist and load for the child.
+
+This is essential for adaptive learning to function as intended.

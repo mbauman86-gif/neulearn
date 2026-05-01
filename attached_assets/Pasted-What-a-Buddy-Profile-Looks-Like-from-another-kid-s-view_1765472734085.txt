@@ -1,0 +1,181 @@
+What a Buddy Profile Looks Like (from another kid’s view)
+Think of it like a little “trading card + mini-room”:
+
+Top section (Header)
+
+Big avatar
+
+Display name / nickname (no last names)
+
+Small tag line like:
+
+“Explorer • Age 7 • Loves Animals & Space”
+(auto-generated from their settings, not free text)
+
+Theme & background
+
+Full-width background based on the theme they chose:
+
+Forest, Space, Ocean, Castle, Cozy Cabin, etc.
+
+Theme subtly changes:
+
+Background art
+
+Accent colors
+
+Maybe header pattern
+
+Info section
+
+About Me block (SAFE, structured)
+
+“I feel most like:” → [ Maker | Reader | Artist | Explorer | Builder | Leader ]
+
+“I like to learn by:” → [ Building | Drawing | Moving | Listening | Reading stories ]
+
+“3 fun facts about me” → they choose from a list like:
+
+“I love animals”
+
+“I like Lego”
+
+“I’m learning to read”
+
+“I like helping my friends”
+(No open text; all from pre-written options.)
+
+Favorite Subjects
+
+Icons + chips: [ Reading | Math | Science | Nature | Art | Building | Stories ]
+
+They can pick 2–4, and you show them as cute colored tags.
+
+Top Buddies
+
+“My Top Buddies” row (like old-school top friends, but small & kind):
+
+3–5 buddy avatars with names
+
+Tap → go to that buddy’s profile
+
+Recent Activity / Highlights
+
+“Recent Adventures” section:
+
+A small grid or list of:
+
+Last 3 badges earned
+
+Last 3 completed quests/challenges
+
+Card examples:
+
+“Finished Reading Quest: Silly Animals”
+
+“Earned Builder Badge”
+
+“Submitted Lego Tower to Weekly Challenge”
+
+Reactions
+
+At the bottom:
+
+Buttons like: ⭐ Nice! / 🎉 So cool! / 💡 Inspiring!
+
+When a buddy taps, it shows a tiny “{BuddyName} reacted ⭐” on your side.
+
+2️⃣ What the Profile Owner Can Customize
+This is your MySpace‑energy part, but controlled.
+
+A. Theme & Layout
+From “Edit Profile” screen:
+
+Choose Theme:
+
+Forest, Space, Ocean, Castle, City, Farm, Cozy Room…
+
+Choose Accent Color within the theme (limited palette):
+
+E.g. for Space: teal / purple / blue
+
+Optional later:
+
+Pick layout style:
+
+“Classic” (info first, then activity)
+
+“Showcase” (activity first, then info)
+
+“Compact” (simple card-style)
+
+B. About Me (but safe)
+Instead of free typing, you give them builders:
+
+“I feel most like…”
+Choose up to 2 identity tags:
+
+Maker, Reader, Artist, Scientist, Builder, Leader, Explorer
+
+“I like to learn by…”
+Choose up to 2:
+
+Building, Drawing, Moving, Listening, Talking, Reading, Playing games
+
+“Fun facts about me…”
+Choose up to 3 from a pool:
+
+“I love animals”
+
+“I like to build things”
+
+“I like helping people”
+
+“I love stories”
+
+“I’m learning to read”
+
+“I like being outside”
+
+“I like math puzzles”
+etc.
+
+You can ALWAYS add more later.
+
+C. Favorite Subjects
+Checkbox list → displayed as tags:
+
+Reading
+
+Math
+
+Science
+
+Nature
+
+Art
+
+Music
+
+Building / Engineering
+
+Stories / Writing
+
+They pick 2–4. You enforce min/max in the UI.
+
+D. Top Friends (Top Buddies)
+In “Edit profile”:
+
+Show a list of their buddies with toggles:
+
+ Show in “Top Buddies”
+
+Limit to 3–5 showing at once.
+
+Order can be:
+
+Most often interacted with, or
+
+Allow them to pick (but still from approved buddy list).
+
+Parents should be able to override this from parent dashboard if needed.
