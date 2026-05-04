@@ -21,6 +21,8 @@ import SocialHub from "./pages/SocialHub";
 import BuddyProfile from "./pages/BuddyProfile";
 import LessonPlayerCubDemo from "./pages/v2/LessonPlayerCubDemo";
 import TodayCubDemo from "./pages/v2/TodayCubDemo";
+import V2TodayPage from "./pages/v2/TodayPage";
+import V2LessonPage from "./pages/v2/LessonPage";
 
 function Loading() {
   return (
@@ -187,6 +189,23 @@ function Router() {
       </Route>
       <Route path="/v2/preview/today-cub">
         {() => <TodayCubDemo />}
+      </Route>
+
+      {/* Production v2 routes — auth-required, real data. Son-test alpha runs through
+          these. Currently always Cub register; switches on grade once Wise lands. */}
+      <Route path="/v2/child/today">
+        {() => (
+          <ProtectedChildRoute>
+            <V2TodayPage />
+          </ProtectedChildRoute>
+        )}
+      </Route>
+      <Route path="/v2/child/lesson/:lessonId">
+        {() => (
+          <ProtectedChildRoute>
+            <V2LessonPage />
+          </ProtectedChildRoute>
+        )}
       </Route>
 
       {/* Fallback */}
