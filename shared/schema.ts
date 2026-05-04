@@ -120,7 +120,27 @@ export const rewardState = pgTable("reward_state", {
   childId: varchar("child_id").notNull().references(() => children.id, { onDelete: "cascade" }).unique(),
   points: integer("points").notNull().default(0),
   badges: json("badges").$type<string[]>().notNull().default(sql`'[]'::json`),
+  // Three-currency reward system — Depth (stick-with-it / mastery), Explore (variety),
+  // Comeback (returning to skipped items). The mix is itself a temperament signal that feeds
+  // back into the engine. Phase 1 migration 2026-05-04.
+  depthCurrency: integer("depth_currency").notNull().default(0),
+  exploreCurrency: integer("explore_currency").notNull().default(0),
+  comebackCurrency: integer("comeback_currency").notNull().default(0),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+});
+
+// Event log for currency awards. Lets us derive temperament signals later (e.g., the ratio
+// of Depth-to-Explore points indicates whether the child is more depth-first or breadth-first).
+// Phase 1 migration 2026-05-04.
+export const rewardCurrencyEvents = pgTable("reward_currency_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  childId: varchar("child_id").notNull().references(() => children.id, { onDelete: "cascade" }),
+  currencyType: text("currency_type").notNull(), // 'depth' | 'explore' | 'comeback'
+  amount: integer("amount").notNull(),
+  reason: text("reason").notNull(), // 'lesson_completed' | 'new_subject' | 'returned_after_skip' | 'mastery_promoted' | etc.
+  lessonInstanceId: varchar("lesson_instance_id").references(() => lessonInstances.id, { onDelete: "set null" }),
+  skillId: varchar("skill_id").references(() => skills.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const devotionals = pgTable("devotionals", {
@@ -198,6 +218,14 @@ export const childSkillProgress = pgTable("child_skill_progress", {
   lastPracticeDate: text("last_practice_date"),
   lastScore: integer("last_score"), // Most recent score (0-100)
   needsReinforcement: boolean("needs_reinforcement").notNull().default(false),
+  // Mastery-real fields (Phase 1 migration 2026-05-04):
+  // - lastPracticeTimestamp enables spaced retrieval (time-since-last-practice gates promotion)
+  // - contextVarietyCount tracks how many distinct problem framings the child has demonstrated
+  //   the skill across (gates promotion to FLUENT and TRANSFER)
+  // - contextTagsSeen lists which framings have been seen, so we don't double-count repeats
+  lastPracticeTimestamp: timestamp("last_practice_timestamp"),
+  contextVarietyCount: integer("context_variety_count").notNull().default(0),
+  contextTagsSeen: json("context_tags_seen").$type<string[]>().default(sql`'[]'::json`),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
@@ -293,6 +321,34 @@ export const lessonTemplates = pgTable("lesson_templates", {
   isActive: boolean("is_active").notNull().default(true),
 });
 
+// TTS audio cache with word-level timestamps for karaoke read-along.
+// Generated once per text passage via OpenAI TTS + Whisper round-trip; cached forever.
+// Without this cache, every read-along plays would burn API budget. Phase 1 migration 2026-05-04.
+export const lessonAudioCache = pgTable("lesson_audio_cache", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  // SHA-256 of the (text + voice + speed) tuple — lets us hit-test before regenerating.
+  contentHash: text("content_hash").notNull().unique(),
+  // The text we synthesized.
+  text: text("text").notNull(),
+  // Voice + speed parameters used when generating.
+  voice: text("voice").notNull().default("nova"),
+  speed: text("speed").notNull().default("0.9"),
+  // Where the audio lives. Uses object-storage URL so the bucket can be re-hosted later
+  // without rewriting business logic — see ENV.md for the lock-in note.
+  audioUrl: text("audio_url").notNull(),
+  audioBytes: integer("audio_bytes"),
+  durationMs: integer("duration_ms"),
+  // Whisper word-level timestamps. Each entry is { word, start (sec), end (sec) }.
+  wordTimestamps: json("word_timestamps").$type<Array<{
+    word: string;
+    start: number;
+    end: number;
+  }>>().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  // Last time we played this back. Useful for cache eviction policy later.
+  lastPlayedAt: timestamp("last_played_at"),
+});
+
 // Lesson step structure for AI-generated lessons
 export type LessonInstanceStep = {
   stepNumber: number;
@@ -302,21 +358,37 @@ export type LessonInstanceStep = {
   duration?: number; // minutes
 };
 
-// Teach Phase - explains the concept and shows how to solve problems
+// Reference to a cached audio + word-timestamps row (lessonAudioCache.id) plus the text it was
+// synthesized from. Resolving the audio is a single DB lookup; the actual MP3 lives in object
+// storage at lessonAudioCache.audioUrl. Phase 1 migration 2026-05-04.
+export type AudioRef = {
+  audioCacheId: string;
+  text: string;
+};
+
+// Teach Phase - explains the concept and shows how to solve problems.
+// All `*_audio` fields are OPTIONAL — old lesson_instances generated before the karaoke
+// migration won't have them, and the player must still render plaintext. New lessons should
+// populate them so the karaoke read-along primitive can highlight word-by-word.
 export type TeachPhase = {
   conceptExplanation: string; // "Today we're learning about adding numbers..."
+  conceptExplanationAudio?: AudioRef;
   vocabulary?: Array<{
     term: string;
     definition: string;
+    audio?: AudioRef;
   }>;
   workedExample: {
     problem: string; // "Let's solve 2 + 3 together"
+    problemAudio?: AudioRef;
     steps: Array<{
       stepNumber: number;
       instruction: string; // "First, hold up 2 fingers"
+      instructionAudio?: AudioRef;
       visual?: string; // Optional visual cue
     }>;
     answer: string; // "So 2 + 3 = 5!"
+    answerAudio?: AudioRef;
   };
 };
 
@@ -403,13 +475,20 @@ export const lessonInstances = pgTable("lesson_instances", {
   // CHECK - Assessment questions (AI-generated from bank or fresh)
   assessment: json("assessment").$type<LessonInstanceAssessment>(),
   
-  // Faith integration (if applicable based on settings)
+  // Faith integration — ALWAYS populated regardless of faithMode (Phase 1 migration 2026-05-04).
+  // UI controls how prominently it surfaces (Subtle / Woven in / Centered), never availability.
+  // The Faith Lens button is always shown; this block is what it reveals on tap.
   faithIntegration: json("faith_integration").$type<{
     scripture?: string;
     tieIn?: string;
     optionalPrayer?: string;
-  }>(),
-  
+  }>().notNull().default(sql`'{}'::json`),
+
+  // Distinguishes practice items (kid is learning) from mastery checks (kid is being assessed
+  // against fresh items they haven't seen). Practice → mastery uses different question pools and
+  // different scoring rules. Phase 1 migration 2026-05-04.
+  kind: text("kind").notNull().default("PRACTICE"), // PRACTICE | MASTERY_CHECK
+
   // Status tracking
   status: text("status").notNull().default("READY"), // READY | IN_PROGRESS | COMPLETED | SKIPPED
   date: text("date").notNull(), // YYYY-MM-DD

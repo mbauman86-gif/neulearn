@@ -1,3 +1,8 @@
+// Sentry MUST be the very first import so its instrumentation hooks load before
+// any other module is required. Do not move this below other imports.
+import "./sentry";
+import * as Sentry from "@sentry/node";
+
 import { type Server } from "node:http";
 
 import express, {
@@ -68,6 +73,10 @@ export default async function runApp(
   setup: (app: Express, server: Server) => Promise<void>,
 ) {
   const server = await registerRoutes(app);
+
+  // Sentry's Express error handler must be registered after all controllers
+  // but before any other error-handling middleware.
+  Sentry.setupExpressErrorHandler(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
