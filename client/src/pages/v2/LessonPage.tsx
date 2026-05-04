@@ -16,6 +16,10 @@ import {
   AriIntervention,
   type InterventionActionTag,
 } from "@/components/v2/primitives/AriIntervention";
+import {
+  AssessmentQuestion,
+  type AssessmentQuestionData,
+} from "@/components/v2/primitives/AssessmentQuestion";
 import { apiRequest } from "@/lib/queryClient";
 
 interface InterventionResponse {
@@ -36,6 +40,9 @@ interface LessonInstance {
     conceptExplanation: string;
     workedExample?: { problem: string; answer: string };
   } | null;
+  assessment?: {
+    questions: AssessmentQuestionData[];
+  } | null;
   faithIntegration?: {
     scripture?: string;
     tieIn?: string;
@@ -54,6 +61,8 @@ export default function LessonPage() {
 
   const [step, setStep] = useState<LessonStep>("goal");
   const [activeIntervention, setActiveIntervention] = useState<InterventionResponse | null>(null);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [recentWrongStreak, setRecentWrongStreak] = useState(0);
 
   const { data: lesson, isLoading, error } = useQuery<LessonInstance>({
     queryKey: ["/api/adaptive/lessons", lessonId],
@@ -85,6 +94,25 @@ export default function LessonPage() {
     },
   });
 
+  const attemptMutation = useMutation({
+    mutationFn: async (vars: { questionId: string; childAnswer: string; correctAnswer: string; isCorrect: boolean }) =>
+      apiRequest("POST", `/api/adaptive/lessons/${lessonId}/attempt`, vars).then((r) => r.json()),
+  });
+
+  const recommendMutation = useMutation<InterventionResponse>({
+    mutationFn: async () =>
+      fetch(`/api/intervention/recommend/${lessonId}`, { credentials: "include" }).then((r) =>
+        r.json(),
+      ),
+    onSuccess: (rec) => {
+      // Only surface non-trivial recommendations. "continue" and "encourage" are
+      // background-only signals.
+      if (rec.action !== "continue") {
+        setActiveIntervention(rec);
+      }
+    },
+  });
+
   if (isLoading || !lesson) {
     return (
       <div className="bg-nl-canvas min-h-[100dvh] flex items-center justify-center">
@@ -95,11 +123,41 @@ export default function LessonPage() {
     );
   }
 
-  // Pick what to show in the focal slot based on the current step. For now this is a
-  // simplified mapping — Goal shows the goal text, Show shows the worked example
-  // problem, Try shows a placeholder, Check shows a placeholder. The full transforming
-  // canvas will be wired through as the assessment-driven steps land.
   const focal = pickFocal(lesson, step);
+  const questions = lesson.assessment?.questions ?? [];
+  const activeQuestion = questions[questionIndex];
+
+  function handleQuestionSubmit(answer: string, isCorrect: boolean) {
+    if (!activeQuestion) return;
+    attemptMutation.mutate({
+      questionId: activeQuestion.questionId,
+      childAnswer: answer,
+      correctAnswer: String(activeQuestion.correctAnswer),
+      isCorrect,
+    });
+
+    if (isCorrect) {
+      setRecentWrongStreak(0);
+      // Advance to next question after a brief celebration moment
+      window.setTimeout(() => {
+        if (questionIndex < questions.length - 1) {
+          setQuestionIndex((i) => i + 1);
+        } else if (step === "try") {
+          setStep("check");
+          setQuestionIndex(0);
+        } else if (step === "check") {
+          setStep("done");
+        }
+      }, 900);
+    } else {
+      const newStreak = recentWrongStreak + 1;
+      setRecentWrongStreak(newStreak);
+      // After two consecutive wrong, ping the intervention engine for a recommendation.
+      if (newStreak >= 2) {
+        recommendMutation.mutate();
+      }
+    }
+  }
 
   const handleAdvance = () => {
     const idx = STEP_ORDER.indexOf(step);
@@ -144,6 +202,19 @@ export default function LessonPage() {
     }
   };
 
+  // For Try/Check steps, render the live AssessmentQuestion in the focal slot. The
+  // lesson's `assessment.questions` field is the source — same items that legacy used.
+  // When questions run out (or absent), fall back to the placeholder focal text.
+  const focalContent =
+    (step === "try" || step === "check") && activeQuestion ? (
+      <AssessmentQuestion
+        key={`${step}-${questionIndex}`}
+        question={activeQuestion}
+        onSubmit={handleQuestionSubmit}
+        disabled={attemptMutation.isPending}
+      />
+    ) : undefined;
+
   return (
     <>
       <LessonPlayerCub
@@ -151,11 +222,13 @@ export default function LessonPage() {
         focalText={focal.text}
         focalEmphasis={focal.emphasis}
         caption={focal.caption}
+        focalContent={focalContent}
         currentStep={step}
         onStepTap={(s) => {
           // Only allow tapping completed steps
           if (STEP_ORDER.indexOf(s) < STEP_ORDER.indexOf(step)) {
             setStep(s);
+            setQuestionIndex(0);
           }
         }}
         currencies={{ depth: 0, explore: 0, comeback: 0 }}

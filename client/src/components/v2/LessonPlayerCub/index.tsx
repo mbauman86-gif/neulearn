@@ -12,6 +12,7 @@
  * intervention engine (`server/interventionEngine.ts`) doesn't exist yet — its absence
  * means "I'm stuck" currently just calls a no-op handler.
  */
+import type { ReactNode } from "react";
 import type { LessonStep } from "../primitives/ProgressChip";
 import { ProgressChip } from "../primitives/ProgressChip";
 import { CurrencyStrip } from "../primitives/CurrencyStrip";
@@ -56,6 +57,13 @@ export interface LessonPlayerCubProps {
   readonly onAdvance: () => void;
   /** Whether advancement is enabled (e.g. wait for read-along to complete first). */
   readonly canAdvance?: boolean;
+  /**
+   * Optional override for the focal slot. When provided, this replaces the karaoke
+   * focal text + caption. Used to render assessment questions during Try / Check
+   * steps without losing the chrome (progress chip, currencies, Faith Lens, bottom
+   * affordances).
+   */
+  readonly focalContent?: ReactNode;
 }
 
 export function LessonPlayerCub({
@@ -75,6 +83,7 @@ export function LessonPlayerCub({
   onBreak,
   onAdvance,
   canAdvance = true,
+  focalContent,
 }: LessonPlayerCubProps) {
   return (
     <div
@@ -115,18 +124,25 @@ export function LessonPlayerCub({
             </h1>
           </div>
 
-          {/* Center — focal interactive content */}
+          {/* Center — focal interactive content. focalContent (if provided) replaces
+              the karaoke focal block, used during Try / Check assessment rendering. */}
           <div className="flex-1 flex flex-col items-center justify-center relative">
-            <KaraokeText
-              text={focalText}
-              audioRef={focalAudio}
-              textClassName="text-[96px] font-bold leading-none tracking-tight"
-              defaultSpeed={0.85}
-            />
-            {caption && (
-              <p className="font-nl-reading text-[22px] text-nl-ink-secondary mt-4 text-center max-w-[60ch]">
-                {caption}
-              </p>
+            {focalContent ? (
+              <div className="w-full flex justify-center">{focalContent}</div>
+            ) : (
+              <>
+                <KaraokeText
+                  text={focalText}
+                  audioRef={focalAudio}
+                  textClassName="text-[96px] font-bold leading-none tracking-tight"
+                  defaultSpeed={0.85}
+                />
+                {caption && (
+                  <p className="font-nl-reading text-[22px] text-nl-ink-secondary mt-4 text-center max-w-[60ch]">
+                    {caption}
+                  </p>
+                )}
+              </>
             )}
 
             {/* Cub Ari — illustrated companion in lower right of canvas */}
