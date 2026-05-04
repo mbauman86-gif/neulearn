@@ -20,6 +20,7 @@ import AdaptiveLessonPage from "./pages/AdaptiveLessonPage";
 import SocialHub from "./pages/SocialHub";
 import BuddyProfile from "./pages/BuddyProfile";
 import LessonPlayerCubDemo from "./pages/v2/LessonPlayerCubDemo";
+import TodayCubDemo from "./pages/v2/TodayCubDemo";
 
 function Loading() {
   return (
@@ -183,6 +184,9 @@ function Router() {
           See client/src/components/v2/README.md for migration plan. */}
       <Route path="/v2/preview/lesson-cub">
         {() => <LessonPlayerCubDemo />}
+      </Route>
+      <Route path="/v2/preview/today-cub">
+        {() => <TodayCubDemo />}
       </Route>
 
       {/* Fallback */}

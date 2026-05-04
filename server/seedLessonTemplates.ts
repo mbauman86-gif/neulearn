@@ -454,20 +454,34 @@ const characterTemplates: TemplateData[] = [
 
 export async function seedLessonTemplates(): Promise<void> {
   const existingTemplates = await storage.getLessonTemplates();
-  
-  if (existingTemplates.length > 0) {
-    console.log(`Lesson templates already seeded (${existingTemplates.length} templates). Skipping.`);
-    return;
+
+  if (existingTemplates.length === 0) {
+    console.log("Seeding lesson templates...");
+    const allTemplates = [...mathTemplates, ...readingTemplates, ...characterTemplates];
+    for (const template of allTemplates) {
+      await storage.createLessonTemplate(template);
+      console.log(`  Created template: ${template.subject} - ${template.targetSkillName}`);
+    }
+    console.log(`Successfully seeded ${allTemplates.length} legacy lesson templates.`);
+  } else {
+    console.log(
+      `Legacy lesson templates already seeded (${existingTemplates.length} templates). Skipping legacy seed.`,
+    );
   }
-  
-  console.log("Seeding lesson templates...");
-  
-  const allTemplates = [...mathTemplates, ...readingTemplates, ...characterTemplates];
-  
-  for (const template of allTemplates) {
-    await storage.createLessonTemplate(template);
-    console.log(`  Created template: ${template.subject} - ${template.targetSkillName}`);
+
+  // V2 hand-authored reading templates with full assessment banks (digraphs + sight
+  // words). Idempotent — only inserts templates that don't already exist by
+  // (subject, targetSkillName, gradeBand). Safe to run on every server start.
+  try {
+    const { seedV2ReadingTemplates } = await import("./seedReadingTemplatesV2");
+    const result = await seedV2ReadingTemplates();
+    console.log(
+      `V2 reading templates: inserted=${result.inserted}, skipped=${result.skipped}` +
+        (result.unlinkedSkills.length
+          ? `, unlinked-skills=${result.unlinkedSkills.join(",")}`
+          : ""),
+    );
+  } catch (err) {
+    console.error("Failed to seed V2 reading templates:", err);
   }
-  
-  console.log(`Successfully seeded ${allTemplates.length} lesson templates.`);
 }
