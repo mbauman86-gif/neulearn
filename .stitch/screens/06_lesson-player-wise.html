@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Newsreader:ital,wght@1,400;1,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#496478",
+                        "background-light": "#F5EFE2",
+                        "text-charcoal": "#2A2520",
+                        "moss": "#606C38",
+                        "amber": "#BC6C25",
+                        "slate-blue": "#496478",
+                        "parchment-accent": "#E9E0CD"
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "Public Sans", "sans-serif"],
+                        "serif": ["Newsreader", "serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light text-text-charcoal font-sans antialiased overflow-x-hidden">
+<!-- Main Container -->
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light shadow-xl">
+<!-- Top Chrome -->
+<header class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<!-- Breadcrumb -->
+<p class="text-[12px] font-medium opacity-60 uppercase tracking-wider">Math · Algebra · Linear equations</p>
+<!-- Right Action Group -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 bg-parchment-accent px-2 py-1 rounded-lg h-6">
+<span class="material-symbols-outlined text-[16px]">database</span>
+<span class="text-[11px] font-bold">120</span>
+</div>
+<div class="flex items-center justify-center text-slate-blue">
+<span class="material-symbols-outlined filled-icon" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div class="text-text-charcoal opacity-60">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</div>
+</div>
+</div>
+<!-- Progress Markers (5 segments) -->
+<div class="flex gap-1.5 w-full h-1">
+<div class="h-full flex-1 rounded-full bg-moss" title="Goal"></div>
+<div class="h-full flex-1 rounded-full bg-moss" title="Show"></div>
+<div class="h-full flex-1 rounded-full bg-amber" title="Try"></div>
+<div class="h-full flex-1 rounded-full border border-text-charcoal/20" title="Check"></div>
+<div class="h-full flex-1 rounded-full border border-text-charcoal/20" title="Done"></div>
+</div>
+<!-- Lesson Goal -->
+<div class="mt-4 space-y-1">
+<h1 class="font-serif italic text-[22px] leading-tight text-center">Solve 2x + 3 = 11 by isolating x.</h1>
+<p class="text-[13px] opacity-60 text-center">Step 3 of 5 · ~3 min</p>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 px-4 relative">
+<div class="bg-[#FCF9F2] rounded-xl p-6 shadow-sm border border-parchment-accent flex flex-col gap-8 min-h-[440px]">
+<!-- Refresher Text -->
+<p class="font-serif text-[16px] leading-relaxed text-center px-2">
+                    We're isolating x by reversing operations: subtraction first, then division.
+                </p>
+<!-- Typeset Equation -->
+<div class="flex justify-center items-center py-4">
+<span class="font-mono text-[48px] tracking-tight tabular-nums">2x + 3 = 11</span>
+</div>
+<!-- Interactive Work Area -->
+<div class="space-y-4 font-sans">
+<!-- Step 1 -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="text-sm opacity-60">1.</span>
+<div class="flex items-center gap-2 text-[15px]">
+<span>Subtract</span>
+<input class="w-12 h-9 text-center rounded bg-background-light border-parchment-accent focus:ring-slate-blue focus:border-slate-blue font-mono font-bold" readonly="" type="text" value="3"/>
+<span>from both sides</span>
+</div>
+</div>
+<!-- Derived Step -->
+<div class="flex items-center gap-3 pl-6">
+<span class="material-symbols-outlined text-slate-blue text-sm">subdirectory_arrow_right</span>
+<span class="font-mono text-[20px] text-moss font-bold">2x = 8</span>
+</div>
+</div>
+<!-- Step 2 (Active Input) -->
+<div class="flex flex-col gap-2 pt-2">
+<div class="flex items-center gap-3">
+<span class="text-sm opacity-60">2.</span>
+<div class="flex items-center gap-2 text-[15px]">
+<span>Divide both sides by</span>
+<input class="w-12 h-9 text-center rounded bg-white border-slate-blue focus:ring-slate-blue focus:border-slate-blue font-mono font-bold shadow-inner" placeholder="?" type="text"/>
+</div>
+</div>
+</div>
+<!-- Help Link -->
+<div class="pl-6 pt-2">
+<button class="text-slate-blue text-sm font-semibold flex items-center gap-1 hover:underline">
+                            Show me how
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Bottom Canvas Chips -->
+<div class="mt-auto flex gap-2">
+<button class="flex items-center gap-2 bg-parchment-accent/50 px-3 py-1.5 rounded-lg border border-parchment-accent hover:bg-parchment-accent transition-colors">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="text-xs font-medium">Why this?</span>
+</button>
+<button class="flex items-center gap-2 bg-parchment-accent/50 px-3 py-1.5 rounded-lg border border-parchment-accent hover:bg-parchment-accent transition-colors">
+<span class="material-symbols-outlined text-sm">public</span>
+<span class="text-xs font-medium">Real-world tie-in</span>
+</button>
+</div>
+</div>
+<!-- Peek Hint Side Panel -->
+<div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-32 bg-slate-blue/10 rounded-l-xl border-l border-y border-slate-blue/20"></div>
+</main>
+<!-- Learning Signals Section -->
+<section class="p-4 space-y-3">
+<div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-widest text-slate-blue">
+<span>Learning Signals</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Confidence Sparkline -->
+<div class="bg-parchment-accent/30 rounded-lg p-3 border border-parchment-accent/50">
+<p class="text-[11px] leading-tight mb-2 opacity-80">Confidence trending up across recent attempts</p>
+<div class="h-6 w-full flex items-end gap-0.5">
+<div class="bg-moss/40 w-full h-[30%] rounded-t-sm"></div>
+<div class="bg-moss/50 w-full h-[45%] rounded-t-sm"></div>
+<div class="bg-moss/60 w-full h-[40%] rounded-t-sm"></div>
+<div class="bg-moss/70 w-full h-[65%] rounded-t-sm"></div>
+<div class="bg-moss/80 w-full h-[80%] rounded-t-sm"></div>
+<div class="bg-moss w-full h-[95%] rounded-t-sm"></div>
+</div>
+</div>
+<!-- Mastery Progress -->
+<div class="bg-parchment-accent/30 rounded-lg p-3 border border-parchment-accent/50">
+<p class="text-[11px] leading-tight mb-2 opacity-80">Mastery: Developing → Proficient</p>
+<div class="h-2 w-full bg-parchment-accent rounded-full overflow-hidden mt-3">
+<div class="h-full bg-slate-blue w-[72%] rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Chrome -->
+<footer class="p-4 bg-background-light border-t border-parchment-accent">
+<div class="flex items-center justify-between">
+<div class="flex gap-4">
+<button class="text-slate-blue text-[14px] font-semibold hover:underline">I'm stuck</button>
+<button class="text-slate-blue text-[14px] font-semibold hover:underline">Take a break</button>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-text-charcoal/40 text-[14px] font-semibold hover:text-text-charcoal">Skip step</button>
+<button class="bg-slate-blue text-white px-8 py-2.5 rounded-lg font-bold text-[15px] shadow-sm hover:brightness-110 active:scale-95 transition-all">
+                        Submit
+                    </button>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

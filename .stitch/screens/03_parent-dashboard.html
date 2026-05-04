@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Neulearn Parent Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#42474c",
+                        "tertiary-fixed-dim": "#ffb4a6",
+                        "on-background": "#1d1c14",
+                        "on-primary-fixed-variant": "#2f4a5d",
+                        "primary-fixed-dim": "#aecae1",
+                        "on-tertiary-container": "#ffd3cb",
+                        "outline": "#73787d",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#cae6fe",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#c4e0f8",
+                        "primary-container": "#496478",
+                        "secondary-fixed": "#ebe1d9",
+                        "inverse-on-surface": "#f6f0e3",
+                        "surface-container": "#f3ede0",
+                        "surface-container-high": "#eee8db",
+                        "surface-container-highest": "#e8e2d5",
+                        "on-surface": "#1d1c14",
+                        "primary": "#314c5f",
+                        "background": "#fff9ec",
+                        "surface": "#fff9ec",
+                        "error": "#ba1a1a",
+                        "secondary": "#645d57",
+                        "tertiary": "#7e3022"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "sm": "12px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "container-max": "1280px",
+                        "lg": "48px",
+                        "base": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "note-serif": ["Newsreader"],
+                        "h1": ["Newsreader"],
+                        "display-lg": ["Newsreader"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h2": ["Newsreader"],
+                        "body-md": ["Inter"],
+                        "h3": ["Newsreader"]
+                    },
+                    "fontSize": {
+                        "note-serif": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h1": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "h2": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h3": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: #F5EFE2; color: #2A2520; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .amber-underline { border-bottom: 2px solid #B08D57; padding-bottom: 4px; }
+        .moss-pill { background-color: #7A8B7C20; color: #4A5D4C; border: 1px solid #7A8B7C40; }
+    </style>
+</head>
+<body class="font-body-md selection:bg-primary/20">
+<!-- Top Navigation Bar -->
+<header class="bg-[#F7F2ED] border-b border-[#2A2520]/10 h-16 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-12 h-full flex justify-between items-center">
+<!-- Brand -->
+<div class="font-note-serif italic text-[22px] text-[#2A2520]">Neulearn</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="font-label-md text-[14px] text-[#496478] amber-underline" href="#">Home</a>
+<a class="font-label-md text-[14px] text-[#2A2520]/60 hover:text-[#496478] transition-colors" href="#">Children</a>
+<a class="font-label-md text-[14px] text-[#2A2520]/60 hover:text-[#496478] transition-colors" href="#">Curriculum</a>
+<a class="font-label-md text-[14px] text-[#2A2520]/60 hover:text-[#496478] transition-colors" href="#">Community</a>
+<a class="font-label-md text-[14px] text-[#2A2520]/60 hover:text-[#496478] transition-colors" href="#">Settings</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center space-x-6">
+<span class="material-symbols-outlined text-[#2A2520]/70 cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-[#2A2520]/70 cursor-pointer">settings</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-[#2A2520]/10">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a woman in her early 40s with a warm, intelligent expression, wearing a neutral-toned linen shirt. The background is a soft-focus library with warm wood tones and natural morning light, maintaining the high-end editorial aesthetic of the parent CRM dashboard. The lighting is soft and directional, emphasizing a serene and focused parental educator persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVHf3xY1pFkF-_VIsetd8IrS9jo9lroro_RDDW1FKDCwVMxoPJqJGeYxiPowzkRdabcCVRLMSNuSqnIs41py4hAeMtWPYgMSbQtDDM6HLGphjRs1YaG9wQSkOF6pcYaFuXpkeY997ZKeACq9hFQiKq97h0NefjSA9wp1pk9wXX02j2tXN2fYB-k1q2b8LtvJN4KhSAHMdfn7YkdzMdY6i7mYsM0gZxlBayFo4qSrheXVjuNLyOaoRoCz2MbemjwEEqn3YTmguZc-Q"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Layout -->
+<main class="max-w-7xl mx-auto px-12 py-12 flex gap-12">
+<!-- Left/Main Column -->
+<div class="flex-1 space-y-md">
+<!-- Hero Header -->
+<header class="mb-lg">
+<h1 class="font-h1 text-[32px] italic text-[#2A2520] mb-2">Wednesday, May 4</h1>
+<p class="font-body-lg text-[18px] text-[#2A2520]/70">
+                    Mateo on track. <span class="text-tertiary font-medium">Sofia has 3 items skipped this week</span> — worth a look.
+                </p>
+</header>
+<!-- Child Card 1: Mateo -->
+<section class="bg-surface-container-lowest border border-[#2A2520]/10 rounded-lg p-md flex items-start gap-8 shadow-sm">
+<div class="w-24 flex flex-col items-center text-center gap-2">
+<div class="w-16 h-16 rounded-full border-4 border-[#B08D57] p-1">
+<img class="w-full h-full object-cover rounded-full" data-alt="A portrait of a young 6-year-old boy named Mateo with curly hair and a curious, joyful expression. He is wearing a simple moss-green cotton tee. The photograph has a classic, film-like quality with gentle natural light, set against a soft neutral parchment background to match the literary minimalism of the application's design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz1hFSHuA8XcRXsVb3-9j_qt6u126Q1wGhMKHzM6sEy6KOjn4jOwdPZOF3joc6hUDlwBs2e-GY4ATEUFYKJAMJP9CFYg_mp8hJwd887PYl2-6tu6ETwUah4FgSq1TofWVQU3LJkFJlof0X8Dpu5CE1YbHPoL_sUnQCXnATO6_EQaKhK_YVZ6T-SsRl54Ums2Ldae9HxzADXZfe0iqMG4kLSEssZoQo2WaC9MRbLIaeRlwNwyjYW-lFNCMajy020RVO7RxE4QCAtes"/>
+</div>
+<div>
+<h3 class="font-h3 text-[22px] leading-tight">Mateo</h3>
+<p class="font-label-md text-[13px] text-[#2A2520]/60 uppercase tracking-widest">6 · 1st grade</p>
+</div>
+</div>
+<div class="flex-1 border-x border-[#2A2520]/5 px-8">
+<h4 class="font-label-md text-[11px] uppercase tracking-widest text-[#2A2520]/40 mb-4">Mastery Areas</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 moss-pill rounded-full text-[12px] font-medium">Reading</span>
+<span class="px-3 py-1 moss-pill rounded-full text-[12px] font-medium">Math</span>
+<span class="px-3 py-1 moss-pill rounded-full text-[12px] font-medium">Writing</span>
+<span class="px-3 py-1 moss-pill rounded-full text-[12px] font-medium">Science</span>
+<span class="px-3 py-1 moss-pill rounded-full text-[12px] font-medium">Character</span>
+</div>
+</div>
+<div class="w-48 space-y-4">
+<div>
+<p class="font-label-md text-[11px] text-[#2A2520]/40 uppercase mb-1">Today's Path</p>
+<p class="text-sm font-medium">4 items, <span class="text-[#4A5D4C]">1 done</span></p>
+</div>
+<div>
+<p class="font-label-md text-[11px] text-[#2A2520]/40 uppercase mb-1">Currency</p>
+<p class="text-sm font-medium text-primary-container">+3 Depth, +1 Comeback</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#B08D57] text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<p class="text-sm font-medium">Faith Lens: 1 of 4</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 text-right">
+<a class="text-primary font-medium text-sm hover:underline" href="#">Daily Log</a>
+<a class="text-primary font-medium text-sm hover:underline" href="#">Portfolio</a>
+<a class="text-primary font-medium text-sm hover:underline" href="#">Assessment</a>
+</div>
+</section>
+<!-- Child Card 2: Sofia -->
+<section class="bg-surface-container-lowest border border-[#2A2520]/10 rounded-lg p-md flex items-start gap-8 shadow-sm">
+<div class="w-24 flex flex-col items-center text-center gap-2">
+<div class="w-16 h-16 rounded-full border-4 border-[#A14A3A]/40 p-1">
+<img class="w-full h-full object-cover rounded-full" data-alt="A close-up portrait of a 10-year-old girl named Sofia with a thoughtful, slightly focused expression. She has long braided hair and is wearing a cream-colored knit sweater. The lighting is warm and intellectual, suggesting a quiet study environment. The overall tone is refined and academic, perfectly aligning with the dashboard's professional and calm parent-educator interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEybGVGRZ3WLM3-4Y_Je17mJGeJ4UXxsNoX6igC-GN6Ed7XRtPuI3pkwewwps0TIJfXIfspmiXnYLpkWGKMDsh6QX8dDpVdMjlZO9B0CFN-xz7hrY7jm9RpUpESmC_fYIg5DTEqyDdo3EIOAGhbjXPQ_ajbD78iuzPsvNrY7H3CDb6wrixDM5O6s8TN2wRcCPkR_7TMMSGd-R6W0FLy0Ev0Dyj_ouw_nlCTrUIgDmRyTiIoK9FA89epfEifdVE-h4GEC4-GmYQ9QQ"/>
+</div>
+<div>
+<h3 class="font-h3 text-[22px] leading-tight">Sofia</h3>
+<p class="font-label-md text-[13px] text-[#2A2520]/60 uppercase tracking-widest">10 · 5th grade</p>
+</div>
+</div>
+<div class="flex-1 border-x border-[#2A2520]/5 px-8">
+<h4 class="font-label-md text-[11px] uppercase tracking-widest text-[#2A2520]/40 mb-4">Mastery Progress</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium w-16">Reading</span>
+<div class="flex-1 h-1.5 bg-[#2A2520]/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 80%"></div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium w-16">Math</span>
+<div class="flex-1 h-1.5 bg-[#2A2520]/5 rounded-full overflow-hidden">
+<div class="h-full bg-[#B08D57]" style="width: 40%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-56 space-y-4">
+<div class="bg-[#A14A3A]/10 border border-[#A14A3A]/20 p-3 rounded-lg">
+<p class="font-label-md text-[10px] text-[#A14A3A] uppercase font-bold mb-1">Attention Required</p>
+<p class="text-[13px] font-medium text-[#A14A3A]">3 items skipped 3+ times this week</p>
+<p class="font-note-serif italic text-sm mt-2 text-[#2A2520]/80 border-t border-[#A14A3A]/20 pt-2">Suggested conversation: counting in tens</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 text-right">
+<a class="text-primary font-medium text-sm hover:underline" href="#">Daily Log</a>
+<a class="text-primary font-medium text-sm hover:underline" href="#">Portfolio</a>
+<a class="text-primary font-medium text-sm hover:underline" href="#">Assessment</a>
+</div>
+</section>
+<!-- Bottom Modules Grid -->
+<div class="grid grid-cols-3 gap-gutter">
+<!-- Curriculum Module -->
+<div class="bg-white/40 p-md rounded-lg border border-[#2A2520]/5">
+<h5 class="font-h3 text-base mb-4">This week's curriculum</h5>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[#7A8B7C] text-sm mt-1">check_circle</span>
+<span class="text-sm">Phonetic decoding: Blended vowels</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[#7A8B7C] text-sm mt-1">check_circle</span>
+<span class="text-sm">Geometric shapes: Pentagons</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[#7A8B7C] text-sm mt-1">check_circle</span>
+<span class="text-sm">Early American settlements</span>
+</li>
+</ul>
+</div>
+<!-- Goals Module -->
+<div class="bg-white/40 p-md rounded-lg border border-[#2A2520]/5">
+<h5 class="font-h3 text-base mb-4">Year-end goals</h5>
+<div class="space-y-4">
+<div class="relative py-2 border-b border-[#2A2520]/5">
+<p class="text-xs font-semibold mb-1">Mateo: Fluent Reader</p>
+<div class="h-4 w-full bg-[#B08D57]/10 relative rounded-sm overflow-hidden">
+<div class="absolute left-0 h-full bg-[#B08D57]/30 border-r border-[#B08D57]" style="width: 65%"></div>
+</div>
+</div>
+<div class="relative py-2 border-b border-[#2A2520]/5">
+<p class="text-xs font-semibold mb-1">Sofia: Pre-Algebra Master</p>
+<div class="h-4 w-full bg-[#314c5f]/10 relative rounded-sm overflow-hidden">
+<div class="absolute left-0 h-full bg-[#314c5f]/20 border-r border-[#314c5f]" style="width: 42%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Family Rhythm Module -->
+<div class="bg-white/40 p-md rounded-lg border border-[#2A2520]/5">
+<h5 class="font-h3 text-base mb-4">Family rhythm</h5>
+<div class="grid grid-cols-5 gap-4">
+<div class="text-center">
+<p class="text-[10px] font-bold text-[#2A2520]/40 uppercase mb-2">M</p>
+<div class="w-2 h-2 rounded-full bg-[#4A5D4C] mx-auto"></div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-[#2A2520]/40 uppercase mb-2">T</p>
+<div class="w-2 h-2 rounded-full bg-[#4A5D4C] mx-auto"></div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-[#2A2520]/40 uppercase mb-2">W</p>
+<div class="w-2 h-2 rounded-full bg-[#4A5D4C] mx-auto"></div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-[#2A2520]/40 uppercase mb-2">T</p>
+<div class="w-2 h-2 rounded-full bg-[#2A2520]/10 mx-auto"></div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-[#2A2520]/40 uppercase mb-2">F</p>
+<div class="w-2 h-2 rounded-full bg-[#2A2520]/10 mx-auto"></div>
+</div>
+</div>
+<p class="text-[11px] text-[#2A2520]/50 mt-6 text-center italic">Strong momentum this week.</p>
+</div>
+</div>
+</div>
+<!-- Right Sidebar -->
+<aside class="w-80 space-y-md">
+<!-- Faith Lens Sidebar Panel -->
+<div class="bg-surface-container-high/50 p-6 rounded-lg border border-[#B08D57]/20 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-8xl text-[#B08D57]">auto_awesome</span>
+</div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-[#B08D57] font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h6 class="font-h3 text-sm tracking-tight">Faith Lens this week</h6>
+</div>
+<p class="font-note-serif italic text-base text-[#2A2520] mb-4">
+                    "Train up a child in the way he should go; even when he is old he will not depart from it."
+                </p>
+<a class="text-primary font-semibold text-[13px] inline-flex items-center gap-1 hover:gap-2 transition-all" href="#">
+                    View guidance <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div>
+<!-- Community Panel -->
+<div class="bg-white/40 p-6 rounded-lg border border-[#2A2520]/5">
+<h6 class="font-label-md text-[11px] uppercase tracking-widest text-[#2A2520]/40 mb-6">Community</h6>
+<div class="space-y-6">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#2A2520]/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#2A2520]/40">group</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium">Friend request from <span class="font-bold">The Patel family</span></p>
+<p class="text-[11px] text-[#2A2520]/60 mb-3">Homeschooling 3 children in Denver</p>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 text-[12px] font-semibold bg-primary text-white rounded-md">Accept</button>
+<button class="px-3 py-1.5 text-[12px] font-semibold text-[#2A2520]/60 hover:bg-[#2A2520]/5 rounded-md">Dismiss</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Quick Links -->
+<div class="p-6">
+<h6 class="font-label-md text-[11px] uppercase tracking-widest text-[#2A2520]/40 mb-4">Resources</h6>
+<div class="space-y-4">
+<div class="flex items-center gap-3 text-sm group cursor-pointer">
+<span class="material-symbols-outlined text-sm text-[#2A2520]/40 group-hover:text-primary transition-colors">book_2</span>
+<span class="group-hover:text-primary transition-colors">Digital Library</span>
+</div>
+<div class="flex items-center gap-3 text-sm group cursor-pointer">
+<span class="material-symbols-outlined text-sm text-[#2A2520]/40 group-hover:text-primary transition-colors">calendar_today</span>
+<span class="group-hover:text-primary transition-colors">Annual Schedule</span>
+</div>
+<div class="flex items-center gap-3 text-sm group cursor-pointer">
+<span class="material-symbols-outlined text-sm text-[#2A2520]/40 group-hover:text-primary transition-colors">print</span>
+<span class="group-hover:text-primary transition-colors">Print Daily Sheets</span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Support Floating Action (Optional - Subtle) -->
+<button class="fixed bottom-8 right-8 w-12 h-12 bg-white border border-[#2A2520]/10 rounded-full shadow-lg flex items-center justify-center text-[#2A2520]/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</body></html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400;1,6..72,700&amp;family=Inter:wght@400;500;600&amp;family=Atkinson+Hyperlegible:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#496478", // Slate Blue accent
+                        "background-light": "#F5EFE2", // Parchment
+                        "charcoal": "#2A2520",
+                        "amber-strip": "#C8923A",
+                        "moss-strip": "#6B7D5D",
+                        "slate-strip": "#496478",
+                        "faith-gold": "#B59410",
+                    },
+                    fontFamily: {
+                        "newsreader": ["Newsreader", "serif"],
+                        "inter": ["Inter", "sans-serif"],
+                        "atkinson": ["Atkinson Hyperlegible", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #F5EFE2;
+            color: #2A2520;
+            font-family: 'Atkinson Hyperlegible', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen max-w-md mx-auto shadow-2xl bg-background-light overflow-x-hidden">
+<!-- TOP CHROME -->
+<header class="p-4 pb-2">
+<div class="flex items-center justify-between mb-4">
+<h1 class="font-newsreader italic text-[16px] text-charcoal">Neulearn</h1>
+<div class="flex gap-2">
+<button class="text-charcoal"><span class="material-symbols-outlined">visibility</span></button>
+<button class="text-charcoal"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-charcoal"><span class="material-symbols-outlined">settings</span></button>
+</div>
+</div>
+<!-- CURRENCY CHIPS -->
+<div class="flex gap-2 mb-6">
+<div class="bg-[#EBE4D5] rounded-lg px-3 py-1.5 flex items-baseline gap-2">
+<span class="text-[18px] font-bold font-inter">47</span>
+<span class="text-[10px] uppercase tracking-wider font-inter font-semibold opacity-60">Depth</span>
+</div>
+<div class="bg-[#EBE4D5] rounded-lg px-3 py-1.5 flex items-baseline gap-2">
+<span class="text-[18px] font-bold font-inter">23</span>
+<span class="text-[10px] uppercase tracking-wider font-inter font-semibold opacity-60">Explore</span>
+</div>
+<div class="bg-[#EBE4D5] rounded-lg px-3 py-1.5 flex items-baseline gap-2">
+<span class="text-[18px] font-bold font-inter">11</span>
+<span class="text-[10px] uppercase tracking-wider font-inter font-semibold opacity-60">Comeback</span>
+</div>
+</div>
+<!-- HEADER -->
+<div class="flex items-baseline justify-between border-b border-charcoal/10 pb-4">
+<h2 class="font-newsreader text-[30px] font-bold">Wednesday.</h2>
+<p class="font-inter text-[14px] opacity-70">May 4 · 4 items today · ~52 min</p>
+</div>
+</header>
+<!-- ARI MOMENT -->
+<section class="px-4 py-4 flex items-start gap-3">
+<div class="mt-1">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<p class="font-newsreader italic text-[16px] leading-snug">
+            Yesterday's Apply project notes are ready when you are
+        </p>
+</section>
+<!-- TODAY'S PATH -->
+<main class="px-4 space-y-3">
+<!-- Row 1: Core -->
+<div class="bg-white/40 border border-charcoal/5 rounded-lg p-3 flex gap-3 relative overflow-hidden">
+<div class="w-1.5 h-full absolute left-0 top-0 bg-amber-strip"></div>
+<div class="flex-1 pl-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-atkinson font-bold text-[15px] leading-tight pr-4">Linear equations: solving for x with two operations</h3>
+<button class="text-charcoal/40"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+</div>
+<div class="flex items-center gap-3 text-[12px] font-inter opacity-60 mb-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calculate</span> Math 8th</span>
+<span>14 min</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-charcoal/10 rounded-full overflow-hidden">
+<div class="bg-amber-strip h-full w-[40%]"></div>
+</div>
+<span class="text-[10px] font-bold font-inter">40% Mastery</span>
+</div>
+</div>
+</div>
+<!-- Row 2: Spiral Review -->
+<div class="bg-white/40 border border-charcoal/5 rounded-lg p-3 flex gap-3 relative overflow-hidden">
+<div class="w-1.5 h-full absolute left-0 top-0 bg-moss-strip"></div>
+<div class="flex-1 pl-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-atkinson font-bold text-[15px] leading-tight pr-4">Reading: theme vs. main idea</h3>
+<button class="text-charcoal/40"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+</div>
+<div class="flex items-center gap-3 text-[12px] font-inter opacity-60 mb-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">auto_stories</span> Spiral Review</span>
+<span>12 min</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-charcoal/10 rounded-full overflow-hidden">
+<div class="bg-moss-strip h-full w-[75%]"></div>
+</div>
+<span class="text-[10px] font-bold font-inter">75% Mastery</span>
+</div>
+</div>
+</div>
+<!-- Row 3: Apply -->
+<div class="bg-white/40 border border-charcoal/5 rounded-lg p-3 flex gap-3 relative overflow-hidden">
+<div class="w-1.5 h-full absolute left-0 top-0 bg-slate-strip"></div>
+<div class="flex-1 pl-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-atkinson font-bold text-[15px] leading-tight pr-4">Multi-week project: design a budget for a small business</h3>
+<button class="text-charcoal/40"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+</div>
+<div class="flex items-center gap-3 text-[12px] font-inter opacity-60 mb-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">architecture</span> Apply · Week 2 of 3</span>
+<span>20 min</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-charcoal/10 rounded-full overflow-hidden">
+<div class="bg-slate-strip h-full w-[10%]"></div>
+</div>
+<span class="text-[10px] font-bold font-inter">Active</span>
+</div>
+</div>
+</div>
+<!-- Row 4: Devotional -->
+<div class="bg-white/40 border border-charcoal/5 rounded-lg p-3 flex gap-3 relative overflow-hidden">
+<div class="w-1.5 h-full absolute left-0 top-0 bg-faith-gold"></div>
+<div class="flex-1 pl-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-atkinson font-bold text-[15px] leading-tight pr-4">Wonder: what is courage?</h3>
+<button class="text-charcoal/40"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+</div>
+<div class="flex items-center gap-3 text-[12px] font-inter opacity-60 mb-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">church</span> Scripture + Reflection</span>
+<span>6 min</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-charcoal/10 rounded-full overflow-hidden">
+<div class="bg-faith-gold h-full w-[0%]"></div>
+</div>
+<span class="text-[10px] font-bold font-inter">Not Started</span>
+</div>
+</div>
+</div>
+</main>
+<!-- PURSUITS IN MOTION -->
+<section class="p-4">
+<h2 class="font-newsreader text-[18px] font-bold mb-3">Pursuits in motion</h2>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white p-3 rounded-lg border border-charcoal/5 aspect-square flex flex-col justify-between">
+<p class="font-atkinson text-[14px] leading-tight font-bold">Build a backyard astronomy log</p>
+<div class="text-primary"><span class="material-symbols-outlined" data-weight="fill">star</span></div>
+</div>
+<div class="bg-white p-3 rounded-lg border border-charcoal/5 aspect-square flex flex-col justify-between">
+<p class="font-atkinson text-[14px] leading-tight font-bold">Spanish: read El Principito chapter 3</p>
+<div class="text-primary"><span class="material-symbols-outlined" data-weight="fill">language</span></div>
+</div>
+</div>
+</section>
+<!-- LATER SHELF -->
+<section class="p-4 pt-0">
+<div class="flex justify-between items-center mb-2">
+<h2 class="font-inter text-[11px] font-bold uppercase tracking-widest opacity-50">Later</h2>
+<div class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold font-inter">Skip budget: 2 of 3 left</div>
+</div>
+<div class="space-y-1">
+<div class="flex items-center justify-between p-2 rounded hover:bg-charcoal/5">
+<span class="text-[13px] font-atkinson">Review chemistry flashcards</span>
+<span class="material-symbols-outlined text-sm opacity-30">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded hover:bg-charcoal/5 border-t border-charcoal/5">
+<span class="text-[13px] font-atkinson">Grammar: parallel structure</span>
+<span class="material-symbols-outlined text-sm opacity-30">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- BOTTOM CHROME -->
+<footer class="p-6 border-t border-charcoal/10 bg-white/30">
+<div class="flex items-center justify-between mb-6">
+<button class="text-primary font-inter font-semibold text-[14px]">I'm stuck</button>
+<button class="text-primary font-inter font-semibold text-[14px]">Take a break</button>
+</div>
+<!-- Karaoke / Focus Control -->
+<div class="flex items-center justify-center gap-8">
+<button class="text-charcoal/40"><span class="material-symbols-outlined">skip_previous</span></button>
+<button class="bg-charcoal text-white size-12 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="text-charcoal/40"><span class="material-symbols-outlined">skip_next</span></button>
+</div>
+</footer>
+<!-- Decorative Image Block -->
+<div class="px-4 pb-8">
+<img class="w-full h-32 object-cover rounded-xl opacity-80" data-alt="A macro photograph of an antique brass astrolabe and thick parchment paper resting on a dark wood desk. The lighting is soft and golden, evocative of a late afternoon study session in a quiet library. The image composition emphasizes texture and history, maintaining a sophisticated, academic aesthetic with a palette of warm ambers, deep bronzes, and creamy paper tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkvvB6KrcKhAWtALwwq9rxcJETabZORLPUYacWHjAe5cSZdCw0GHZLlWlOoNwGcXQJbNEHgvt6L0VuzXs6pEII-lUTBpCfYwZVxRsbk5ilt6YLk5D-A_yeKhWPDG90-GkHHdfHMfX21RPGDnt727ZaaokwfBYYBXI48FC3aH0K9y3mD-zKEU2zePkLXahKIBkB8a7GdU2Ug1LfxFMn2zwhGPe3bA-jw9x-BrPvb_e6YvUNVYIAft5UxuCarDMyAzy71XfpSOwHOFU"/>
+</div>
+</body></html>

@@ -135,13 +135,13 @@ export class AdaptiveEngine {
   private getFaithContext(faithMode: string): string {
     switch (faithMode) {
       case "FULL_DISCIPLESHIP":
-        return "Integrate deep Biblical teaching and theology. Include scripture memorization, prayer prompts, and explicit connections to Christian doctrine.";
+        return "Integrate non-denominational, Jesus-centered Biblical teaching. Include scripture memorization, prayer prompts, and connections to Christian principles. Stay non-political and avoid denomination-specific doctrine. When age-appropriate, encourage curious exploration of related ideas without penalty.";
       case "FAITH_FORWARD":
-        return "Weave scripture and Christian values naturally into the lesson. Include a relevant Bible verse and show how the skill connects to faith.";
+        return "Weave scripture and Jesus-centered Christian values naturally into the lesson when they fit honestly. Include a relevant Bible verse and show how the skill connects to faith. Stay non-denominational and apolitical. Leave room for the child to ask questions and explore.";
       case "VALUES_ONLY":
-        return "Focus on character virtues without explicit religious content. Emphasize kindness, honesty, patience, and other values.";
+        return "Keep the main lesson body free of explicit scripture and prayer. Focus on character virtues — kindness, honesty, patience, perseverance, curiosity — woven through the lesson naturally. STILL produce the faithIntegration block with a relevant scripture and a 2-3 sentence non-denominational, scholarly Jesus-centered perspective; the UI will surface it only via an opt-in 'Faith Lens' button. Never editorialize on contested politics.";
       default:
-        return "Include faith integration appropriate for a Christian homeschool setting.";
+        return "Use a non-denominational, Jesus-centered Christian frame at a gentle level. Stay strictly apolitical. Allow space for the child to wonder and explore.";
     }
   }
   
@@ -368,12 +368,17 @@ export class AdaptiveEngine {
       "3": "ages 8-9",
       "4": "ages 9-10",
       "5": "ages 10-11",
+      "6": "ages 11-12",
+      "7": "ages 12-13",
+      "8": "ages 13-14",
     };
-    return ranges[grade] || "ages 5-11";
+    return ranges[grade] || "ages 5-14";
   }
 
-  private getGradeBand(grade: string): "K-2" | "3-5" {
-    return ["K", "1", "2"].includes(grade) ? "K-2" : "3-5";
+  private getGradeBand(grade: string): "K-2" | "3-5" | "6-8" {
+    if (["K", "1", "2"].includes(grade)) return "K-2";
+    if (["3", "4", "5"].includes(grade)) return "3-5";
+    return "6-8";
   }
 
   private getDefaultSkillName(subject: string, grade: string): string {
@@ -470,25 +475,44 @@ export class AdaptiveEngine {
     const gradeBand = this.getGradeBand(params.grade);
     const ageRange = this.getGradeAgeRange(params.grade);
     
-    const gradeSpecificGuidance = gradeBand === "K-2" 
+    const gradeSpecificGuidance = gradeBand === "K-2"
       ? `GRADE K-2 SPECIFIC GUIDANCE:
 - Use very simple vocabulary and short sentences
-- Focus on concrete, hands-on activities with physical objects
+- Default to physical, tactile, hands-on activities with real objects — keep screen time minimal
+- Lean on TTS read-aloud and voice answers; assume the child may not yet read independently
 - Include lots of visual cues and repetition
 - Keep explanations brief (2-3 sentences max)
 - Use playful, encouraging language
 - Activities should involve counting, sorting, matching physical items
 - Assessment questions should be simple choice or single-digit numbers`
-      : `GRADE 3-5 SPECIFIC GUIDANCE:
+      : gradeBand === "3-5"
+      ? `GRADE 3-5 SPECIFIC GUIDANCE:
 - Use grade-appropriate vocabulary with some challenge words
 - Include both hands-on activities AND written work
 - Explanations can be more detailed (3-5 sentences)
 - Activities can include research, writing paragraphs, multi-step problems
 - Assessment can include short answer questions and multi-step calculations
 - Include opportunities for independent thinking and reasoning
-- Can reference real-world applications and connections`;
+- Can reference real-world applications and connections
+- It is appropriate for the child to begin using simple digital tools (typing, structured search) under guidance`
+      : `GRADE 6-8 SPECIFIC GUIDANCE:
+- Use mature, precise vocabulary; assume the student reads fluently
+- Lessons can be project- or pursuit-driven, pulling skills into a real outcome the student cares about
+- Activities can include real software/tools (code editors, spreadsheets, design tools, AI as a collaborator)
+- Explanations can be 4-7 sentences with proper terminology and "why this matters" framing
+- Assessment can include written reasoning, multi-step problems, evidence and citation
+- Encourage independent investigation; AI tutoring is appropriate as a thinking partner, not an answer source
+- Avoid childish framing (no cartoon mascot leaning, no "kiddo" voice); treat the student as a serious learner`;
 
-    const systemPrompt = `You are a loving Christian homeschool curriculum designer creating lessons for grade ${params.grade} students (${ageRange}).
+    const systemPrompt = `You are a thoughtful K-8 homeschool curriculum designer creating a lesson for a grade ${params.grade} student (${ageRange}).
+
+EDITORIAL STANCE (non-negotiable):
+- Foundation: a non-denominational, Jesus-centered Christian frame at the depth specified below — never denomination-specific.
+- Apolitical: do not take sides on contested political or social issues, partisan figures, or culture-war topics. If a topic naturally surfaces, present it neutrally and at age-appropriate depth.
+- Freedom to explore: when the child wonders about other ideas, traditions, or worldviews, treat that curiosity as healthy. Never shame exploration.
+- Real-world relevance: tie the skill to something the child can actually use, build, observe, or create in their life.
+- Montessori-style: a child can be at different grade levels per subject. Never frame the child as "behind" or compare them to other kids — meet them where they are.
+- Faith Lens (always present, never hidden): ALWAYS populate the faithIntegration block, regardless of mode. The Christian foundation is part of the product in every mode. The UI decides how prominently it surfaces in the lesson body — but the Faith Lens button is ALWAYS visible and one tap away. Faith mode names parent-facing are "Subtle" / "Woven in" / "Centered" — NEVER use the words "hidden," "off," "disabled," or "no faith" in any generated copy. Use a scholarly, charitable, non-political voice (e.g., the register of teachers like Wes Huff, Tim Keller, or N.T. Wright) — not folksy or proselytizing.
 
 CRITICAL: Every lesson MUST have exactly 4 sections - GOAL, TEACH, DO, CHECK. Missing any section is a failure.
 
@@ -511,11 +535,15 @@ ${gradeBand === "K-2" ? `- "Count 5 red blocks and stack them in a tower"
 - "Write the letter B three times on your paper"
 - "Draw a circle around all the words that start with 'S'"
 - "Sort your crayons into 2 groups: warm colors and cool colors"
-- "Hold up 3 fingers on one hand and 2 on the other, then count them all"` : `- "Calculate 3 x 4 by drawing 3 groups of 4 circles, then count the total"
+- "Hold up 3 fingers on one hand and 2 on the other, then count them all"` : gradeBand === "3-5" ? `- "Calculate 3 x 4 by drawing 3 groups of 4 circles, then count the total"
 - "Write 3 sentences using at least 2 vocabulary words from the lesson"
 - "Create a simple diagram showing the water cycle with labels"
 - "Solve 2/4 + 1/4 by drawing fraction bars and shading the correct parts"
-- "Research one fact about your topic and write it in your own words"`}
+- "Research one fact about your topic and write it in your own words"` : `- "Outline a 5-paragraph argument for one position on this question, with at least 2 cited sources"
+- "Build a working pre-algebra word-problem solver in a spreadsheet for the equation type taught today"
+- "Write a 200-word reflection comparing today's text to one you've read before, citing specific passages"
+- "Design a simple experiment to test the hypothesis we discussed; list variables, control, and what data you'd collect"
+- "Use an AI tutor to brainstorm three angles on this topic, then evaluate which is strongest and explain why"`}
 
 BAD childTask examples (TOO VAGUE - never use these):
 - "Let's practice together!" (no specific action)
@@ -613,9 +641,9 @@ CRITICAL: Return ONLY valid JSON with ALL 4 required sections:
   },
   "parentNote": "Brief note to encourage and guide the parent",
   "faithIntegration": {
-    "scripture": "Bible verse if applicable",
-    "tieIn": "How this connects to faith",
-    "optionalPrayer": "Simple prayer for the lesson"
+    "scripture": "Required: a Bible verse relevant to the topic (any mode, including VALUES_ONLY). Use a clean, readable translation.",
+    "tieIn": "Required: 2-3 sentences in a non-denominational, Jesus-centered, scholarly-yet-accessible voice connecting the lesson topic to faith. Tone register: Wes Huff / Tim Keller — charitable, intellectually serious, never preachy or political.",
+    "optionalPrayer": "Optional: a simple prayer. Omit in VALUES_ONLY mode."
   }
 }`;
 
@@ -823,11 +851,12 @@ ${insights.map(i => `- ${i}`).join("\n")}`;
       check: fallbackCheck,
       practicePhase: fallbackPractice,
       parentNote: `Take your time and follow ${params.childName}'s lead. If they seem frustrated, take a break and try again later. Celebrate all efforts!`,
-      faithIntegration: params.faithMode !== "VALUES_ONLY" ? {
-        scripture: "Proverbs 2:6 - For the Lord gives wisdom; from his mouth come knowledge and understanding.",
-        tieIn: "God loves to see us learn and grow! Every time we learn something new, we're using the gifts He gave us.",
-        optionalPrayer: "Dear God, thank You for helping us learn today. Amen.",
-      } : undefined,
+      // faithIntegration is always populated; UI decides whether to auto-display or surface only via the opt-in Faith Lens button (per faithMode).
+      faithIntegration: {
+        scripture: "Proverbs 2:6 — For the Lord gives wisdom; from his mouth come knowledge and understanding.",
+        tieIn: "Learning is one of the gifts God gives us. Every time we learn something new, we're using a gift He placed in us.",
+        optionalPrayer: params.faithMode === "VALUES_ONLY" ? undefined : "Dear God, thank You for helping us learn today. Amen.",
+      },
     };
   }
   
@@ -1116,9 +1145,10 @@ ${insights.map(i => `- ${i}`).join("\n")}`;
     nextAction: string;
   }> {
     const gradeBand = this.getGradeBand(params.gradeBand);
-    const systemPrompt = `You are a kind, encouraging tutor helping a ${gradeBand === "K-2" ? "young child (grades K-2)" : "student (grades 3-5)"} who gave a wrong answer.
+    const systemPrompt = `You are a kind, encouraging tutor helping a ${gradeBand === "K-2" ? "young child (grades K-2)" : gradeBand === "3-5" ? "student (grades 3-5)" : "student (grades 6-8)"} who gave a wrong answer.
 NEVER make the child feel bad. Always be gentle, supportive, and encouraging.
 Your goal is to TEACH them HOW to solve the problem step-by-step, not just encourage them.
+Stay apolitical. Do not invoke religious framing in a hint unless the underlying lesson is faith content. The child is allowed to be curious about ideas; never shame a question.
 
 CRITICAL: Your hint must EXPLAIN the method/steps to find the answer. Don't just say "try again" - actually TEACH them.
 

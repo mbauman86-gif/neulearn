@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Neulearn Today - Cub Register</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&amp;family=Inter:wght@400;500;600&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;family=Public+Sans:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              surface: {
+                canvas: "#F5EFE2",
+                raised: "#FBF7EC"
+              },
+              ink: {
+                primary: "#2A2520",
+                secondary: "#5C5346"
+              },
+              brand: {
+                ari: "#C8923A",
+                mastery: "#6F8A52",
+                focus: "#496478",
+                faith: "#D6A85B",
+                error: "#A14A3A"
+              }
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "cub": "32px",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Newsreader", "serif"],
+              display: ["Newsreader", "serif"],
+              body: ["Inter", "sans-serif"],
+              reading: ["Atkinson Hyperlegible", "sans-serif"],
+              label: ["Public Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        background-color: #F5EFE2;
+      }
+      .faith-halo {
+        filter: drop-shadow(0 0 8px rgba(214, 168, 91, 0.4));
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body text-ink-primary min-h-screen pb-32">
+<!-- TopAppBar Component (from JSON guidance) -->
+<header class="bg-[#F5EFE2] dark:bg-[#2A2520] docked full-width top-0 pt-4 pb-2 border-none flat no shadows flex justify-between items-center w-full px-6 max-w-screen-xl mx-auto z-40 sticky">
+<div class="flex items-center gap-3">
+<div class="w-14 h-14 rounded-full overflow-hidden bg-brand-ari/10 border-2 border-brand-ari/20">
+<img class="w-full h-full object-cover" data-alt="A warm, hand-illustrated lion cub named Ari, rendered in soft amber and honey tones. The style is reminiscent of classic children's literature like 'Where the Wild Things Are', featuring gentle pencil textures and a kind, welcoming expression. The lighting is soft and golden, set against a cream parchment background to maintain the Neulearn brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC36eJ-mlfKslgzLsTP2QIzB3S3-zhPGoistuztbePoKADNbhtCGharoi7frogW5fR7Hb1eSwmH_695IRJ4-t_d4SG76b5KB2WQGa998uHPbfL4-XotB8vuVNKrYvzPQ6LePR6L4_2Y5AVgdO9N3-Ktjn7Dc5fZJGHf4pAlCzyfReatTC8RbDZKzQfk-qpQgy-0s4yTel_wb7j83cJ3EB_0r4Hezaxj7Pjl2C6BqYQGaL_7KvGVexTT2ixTmYvzzt2j1-Qe_FLIlA4"/>
+</div>
+<h1 class="font-newsreader text-[32px] leading-tight tracking-tight dark:text-[#FBF7EC]">
+                Good morning, Mateo.
+            </h1>
+</div>
+<!-- Reward Strip (Top Chrome Right) -->
+<div class="hidden md:flex items-center gap-3">
+<span class="text-[#C8923A] font-bold font-newsreader">Depth • Explore • Comeback</span>
+</div>
+<div class="flex gap-2">
+<div class="flex items-center bg-brand-mastery/10 px-3 py-1.5 rounded-full border border-brand-mastery/20">
+<span class="material-symbols-outlined text-brand-mastery text-lg" data-icon="park">park</span>
+<span class="ml-1.5 font-bold text-brand-mastery text-sm">12</span>
+</div>
+<div class="flex items-center bg-brand-focus/10 px-3 py-1.5 rounded-full border border-brand-focus/20">
+<span class="material-symbols-outlined text-brand-focus text-lg" data-icon="explore">explore</span>
+<span class="ml-1.5 font-bold text-brand-focus text-sm">5</span>
+</div>
+<div class="flex items-center bg-brand-ari/10 px-3 py-1.5 rounded-full border border-brand-ari/20">
+<span class="material-symbols-outlined text-brand-ari text-lg" data-icon="flutter_dash">flutter_dash</span>
+<span class="ml-1.5 font-bold text-brand-ari text-sm">3</span>
+</div>
+</div>
+</header>
+<main class="px-6 mt-8 max-w-screen-xl mx-auto">
+<!-- Hero Section -->
+<section class="flex justify-between items-start mb-10">
+<div class="max-w-2xl">
+<h2 class="font-headline italic text-[56px] leading-[1.1] text-ink-primary mb-4">Today's path</h2>
+<p class="font-reading text-[22px] text-ink-secondary leading-relaxed max-w-md">Four things to explore. Take your time.</p>
+</div>
+<button aria-label="Faith Lens" class="faith-halo flex items-center justify-center w-12 h-12 bg-white rounded-full text-brand-faith transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[32px]" data-icon="menu_book">menu_book</span>
+</button>
+</section>
+<!-- Today's Path Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Card 1: Core Learning -->
+<div class="bg-surface-raised rounded-cub p-8 shadow-sm border border-black/5 hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-3 h-full bg-brand-ari"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-brand-ari/10 rounded-2xl text-brand-ari">
+<span class="material-symbols-outlined text-3xl" data-icon="history_edu">history_edu</span>
+</div>
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-brand-ari/40" data-icon="volume_up" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</div>
+</div>
+<h3 class="font-reading font-bold text-[28px] text-ink-primary mb-2">Sounds in words</h3>
+<p class="font-reading text-[20px] text-ink-secondary mb-6">Phonics digraphs lesson</p>
+<div class="flex items-center text-ink-secondary font-medium">
+<span class="material-symbols-outlined mr-2" data-icon="schedule">schedule</span>
+<span class="font-label tracking-wide uppercase text-sm">~10 min</span>
+</div>
+</div>
+<!-- Card 2: Spiral Review -->
+<div class="bg-surface-raised rounded-cub p-8 shadow-sm border border-black/5 hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-3 h-full bg-brand-mastery"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-brand-mastery/10 rounded-2xl text-brand-mastery">
+<span class="material-symbols-outlined text-3xl" data-icon="shell">shield</span>
+</div>
+<span class="material-symbols-outlined text-brand-ari/40" data-icon="volume_up" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</div>
+<h3 class="font-reading font-bold text-[28px] text-ink-primary mb-2">Counting by tens</h3>
+<p class="font-reading text-[20px] text-ink-secondary mb-6">Math review</p>
+<div class="flex items-center text-ink-secondary font-medium">
+<span class="material-symbols-outlined mr-2" data-icon="schedule">schedule</span>
+<span class="font-label tracking-wide uppercase text-sm">~10 min</span>
+</div>
+</div>
+<!-- Card 3: Apply -->
+<div class="bg-surface-raised rounded-cub p-8 shadow-sm border border-black/5 hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-3 h-full bg-brand-focus"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-brand-focus/10 rounded-2xl text-brand-focus">
+<span class="material-symbols-outlined text-3xl" data-icon="forest">forest</span>
+</div>
+<span class="material-symbols-outlined text-brand-ari/40" data-icon="volume_up" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</div>
+<h3 class="font-reading font-bold text-[28px] text-ink-primary mb-2">Take 3 leaves outside</h3>
+<p class="font-reading text-[20px] text-ink-secondary mb-6">Backyard activity</p>
+<div class="flex items-center text-ink-secondary font-medium">
+<span class="material-symbols-outlined mr-2" data-icon="schedule">schedule</span>
+<span class="font-label tracking-wide uppercase text-sm">~15 min</span>
+</div>
+</div>
+<!-- Card 4: Devotional -->
+<div class="bg-surface-raised rounded-cub p-8 shadow-sm border border-black/5 hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-3 h-full bg-brand-faith"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-brand-faith/10 rounded-2xl text-brand-faith">
+<span class="material-symbols-outlined text-3xl" data-icon="light">light</span>
+</div>
+<span class="material-symbols-outlined text-brand-ari/40" data-icon="volume_up" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</div>
+<h3 class="font-reading font-bold text-[28px] text-ink-primary mb-2">Today's wonder</h3>
+<p class="font-reading text-[20px] text-ink-secondary mb-6">Scripture passage</p>
+<div class="flex items-center text-ink-secondary font-medium">
+<span class="material-symbols-outlined mr-2" data-icon="schedule">schedule</span>
+<span class="font-label tracking-wide uppercase text-sm">~5 min</span>
+</div>
+</div>
+</section>
+<!-- Later Shelf -->
+<section class="mt-16 mb-12">
+<h4 class="font-headline text-[24px] text-ink-secondary mb-6">Later shelf</h4>
+<div class="flex flex-wrap gap-3">
+<button class="bg-surface-raised border border-ink-secondary/10 px-5 py-3 rounded-full flex items-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined mr-2 text-ink-secondary" data-icon="music_note">music_note</span>
+<span class="font-body font-medium text-ink-secondary">Morning Hymn</span>
+</button>
+<button class="bg-surface-raised border border-ink-secondary/10 px-5 py-3 rounded-full flex items-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined mr-2 text-ink-secondary" data-icon="brush">brush</span>
+<span class="font-body font-medium text-ink-secondary">Finger Painting</span>
+</button>
+<button class="bg-surface-raised border border-ink-secondary/10 px-5 py-3 rounded-full flex items-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined mr-2 text-ink-secondary" data-icon="add">add</span>
+<span class="font-body font-medium text-ink-secondary">Save new</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar (Custom Chrome) -->
+<div class="fixed bottom-24 left-0 w-full px-6 flex justify-between items-end pointer-events-none">
+<div class="pointer-events-auto flex items-center bg-surface-raised shadow-lg border border-black/5 rounded-full px-4 py-2">
+<span class="material-symbols-outlined text-brand-focus mr-2" data-icon="explore">explore</span>
+<span class="font-label font-bold text-ink-secondary text-sm">3 SWAPS LEFT</span>
+</div>
+<div class="pointer-events-auto flex gap-3">
+<button class="bg-surface-raised/80 backdrop-blur px-6 py-4 rounded-full border border-ink-secondary/20 font-reading font-bold text-ink-secondary hover:bg-white active:scale-95 transition-all shadow-sm">
+                I'm stuck
+            </button>
+<button class="bg-surface-raised/80 backdrop-blur px-6 py-4 rounded-full border border-ink-secondary/20 font-reading font-bold text-ink-secondary hover:bg-white active:scale-95 transition-all shadow-sm">
+                Take a break
+            </button>
+</div>
+</div>
+<!-- BottomNavBar Component (from JSON guidance) -->
+<nav class="bg-[#FBF7EC] dark:bg-[#2A2520] fixed bottom-0 w-full z-50 rounded-t-[32px] border-t border-[#E8DFCA] dark:border-[#3E3830] shadow-[0_-4px_20px_rgba(42,37,32,0.05)] flex justify-around items-center px-4 pb-6 pt-2">
+<a class="flex flex-col items-center justify-center bg-[#F5EFE2] dark:bg-[#3E3830] text-[#C8923A] rounded-[24px] px-6 py-3 translate-y-0.5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="today" style="font-variation-settings: 'FILL' 1;">today</span>
+<span class="font-inter text-[14px] font-medium tracking-wide uppercase">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#5C5346] dark:text-[#F5EFE2]/60 px-6 py-3 hover:text-[#C8923A] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="import_contacts">import_contacts</span>
+<span class="font-inter text-[14px] font-medium tracking-wide uppercase">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#5C5346] dark:text-[#F5EFE2]/60 px-6 py-3 hover:text-[#C8923A] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="menu_book">menu_book</span>
+<span class="font-inter text-[14px] font-medium tracking-wide uppercase">Faith</span>
+</a>
+</nav>
+</body></html>

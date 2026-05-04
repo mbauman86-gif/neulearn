@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Welcome to Neulearn</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Inter:wght@100..900&amp;family=Public+Sans:wght@100..900&amp;family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        surface: "#F5EFE2",
+                        raised: "#FBF7EC",
+                        ink: "#2A2520",
+                        secondary: "#5C5346",
+                        ari: "#C8923A",
+                        moss: "#6F8A52",
+                        slate: "#496478",
+                        faith: "#D6A85B",
+                        error: "#A14A3A"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Newsreader", "serif"],
+                        display: ["Newsreader", "serif"],
+                        body: ["Inter", "sans-serif"],
+                        reading: ["Atkinson Hyperlegible", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #F5EFE2;
+            color: #2A2520;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        input:focus {
+            outline: none;
+            border-bottom-color: #C8923A !important;
+        }
+        .faith-halo {
+            box-shadow: 0 0 15px rgba(214, 168, 91, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body selection:bg-ari/20">
+<!-- Top Navigation Shell (Suppressed as per Transactional Rule, but using header requirement) -->
+<header class="w-full pt-[120px] pb-12 flex flex-col items-center justify-center text-center">
+<h1 class="font-headline italic text-[28px] text-ink leading-none">Neulearn</h1>
+<p class="font-body text-[11px] tracking-[0.15em] uppercase text-secondary mt-3">Welcoming a new learner</p>
+</header>
+<main class="max-w-md mx-auto px-6 pb-24">
+<!-- Hero Section -->
+<section class="mb-16">
+<div class="relative w-full aspect-[4/3] rounded-[32px] overflow-hidden mb-8 bg-gradient-to-b from-[#F5EFE2] via-[#FBF7EC] to-[#F5EFE2]">
+<img class="w-full h-full object-contain mix-blend-multiply opacity-90" data-alt="A warm, hand-drawn illustration of a lion cub named Ari in the artistic style of Maurice Sendak. The cub has soft, textured amber fur and a gentle, curious expression, sitting in a serene clearing. The background is a soft parchment cream with a subtle amber wash light, creating a nostalgic children's book atmosphere. The lighting is diffused and warm, emphasizing a safe and premium educational environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqxXtHG0YBtehEJ8UOn6BKfGDIwTJnG_4auErWRhOjrPyl-jwScO8o1LpwF1fP51ySqiqlSIzeFeBWtyTT71yTg1DRbYCNmsIqg1BYqpsw_kLRAIgDQxX-BA4ADIDqdFxfHDOk-KqSdo6KAzllvQDOgzdKlrN9O9mOppt_fu4ZUB6lGSKz8QInzPPE9mbmdnKdTnRaa1JC37Yg_mrJAFCrin0iTQemGTRIhWK2yPRybEdR3c5Nm8SUau9r1wttIDtX-fJQEsnF7KM"/>
+</div>
+<h2 class="font-headline italic text-[36px] leading-[1.1] text-ink mb-4">Let's meet your child.</h2>
+<p class="font-body text-[18px] leading-[1.6] text-secondary">
+                We'll set up a path that fits how they learn — at their own pace, in their own register, in a place that's safe.
+            </p>
+</section>
+<!-- Form Section -->
+<form class="space-y-[32px] mb-16">
+<!-- Name Input -->
+<div class="flex flex-col space-y-2">
+<label class="font-body text-[14px] text-secondary">Child's first name</label>
+<input class="bg-transparent border-t-0 border-x-0 border-b border-ink/10 py-3 px-0 font-body text-[18px] placeholder:text-secondary/30 transition-colors duration-300" placeholder="What do they like to be called?" type="text"/>
+</div>
+<!-- DOB Input -->
+<div class="flex flex-col space-y-2">
+<label class="font-body text-[14px] text-secondary">Date of birth</label>
+<div class="flex items-center gap-4">
+<input class="w-16 bg-transparent border-t-0 border-x-0 border-b border-ink/10 py-3 px-0 text-center font-body text-[18px] placeholder:text-secondary/30" placeholder="MM" type="text"/>
+<span class="text-ink/20">/</span>
+<input class="w-16 bg-transparent border-t-0 border-x-0 border-b border-ink/10 py-3 px-0 text-center font-body text-[18px] placeholder:text-secondary/30" placeholder="DD" type="text"/>
+<span class="text-ink/20">/</span>
+<input class="w-24 bg-transparent border-t-0 border-x-0 border-b border-ink/10 py-3 px-0 text-center font-body text-[18px] placeholder:text-secondary/30" placeholder="YYYY" type="text"/>
+</div>
+</div>
+<!-- Reading Style -->
+<div class="flex flex-col space-y-4">
+<label class="font-body text-[14px] text-secondary">Reading Style</label>
+<div class="space-y-3">
+<!-- Standard -->
+<label class="relative flex items-center p-5 bg-raised rounded-[24px] border border-ink/5 cursor-pointer hover:border-ari/30 transition-all">
+<input checked="" class="hidden peer" name="reading_style" type="radio" value="standard"/>
+<div class="flex-1">
+<span class="block font-body text-[16px] text-ink font-medium">Standard</span>
+</div>
+<div class="w-2 h-2 rounded-full peer-checked:bg-ari transition-colors"></div>
+<div class="absolute inset-0 rounded-[24px] border-2 border-transparent peer-checked:border-ari/40 pointer-events-none"></div>
+</label>
+<!-- Dyslexia-aware -->
+<label class="relative flex flex-col p-5 bg-raised rounded-[24px] border border-ink/5 cursor-pointer hover:border-ari/30 transition-all">
+<input class="hidden peer" name="reading_style" type="radio" value="dyslexia"/>
+<div class="flex justify-between items-start">
+<span class="block font-body text-[16px] text-ink font-medium">Dyslexia-aware</span>
+<div class="w-2 h-2 rounded-full peer-checked:bg-ari transition-colors mt-2"></div>
+</div>
+<p class="mt-2 font-reading text-[14px] leading-relaxed text-secondary opacity-70">
+                            extra spacing, optional OpenDyslexic font, slower karaoke pacing
+                        </p>
+<div class="absolute inset-0 rounded-[24px] border-2 border-transparent peer-checked:border-ari/40 pointer-events-none"></div>
+</label>
+<!-- Custom -->
+<label class="relative flex items-center p-5 bg-raised rounded-[24px] border border-ink/5 cursor-pointer hover:border-ari/30 transition-all">
+<input class="hidden peer" name="reading_style" type="radio" value="custom"/>
+<div class="flex-1">
+<span class="block font-body text-[16px] text-ink font-medium">Custom</span>
+</div>
+<div class="w-2 h-2 rounded-full peer-checked:bg-ari transition-colors"></div>
+<div class="absolute inset-0 rounded-[24px] border-2 border-transparent peer-checked:border-ari/40 pointer-events-none"></div>
+</label>
+</div>
+</div>
+<!-- Language Chips -->
+<div class="flex flex-col space-y-4">
+<label class="font-body text-[14px] text-secondary">Language</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-2 rounded-full border border-ink/10 font-body text-[14px] text-ink bg-transparent" type="button">English</button>
+<button class="px-5 py-2 rounded-full font-body text-[14px] text-surface bg-moss flex items-center gap-2" type="button">
+<span>Spanish</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<button class="px-5 py-2 rounded-full border border-ink/10 border-dashed font-body text-[14px] text-secondary flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                        Add another
+                    </button>
+</div>
+</div>
+</form>
+<!-- Faith Lens Section -->
+<section class="py-8 border-y border-ink/5 mb-16">
+<div class="flex items-start gap-4 mb-6">
+<div class="w-10 h-10 rounded-full bg-faith/10 flex items-center justify-center faith-halo shrink-0">
+<span class="material-symbols-outlined text-faith" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div>
+<h3 class="font-headline text-[22px] text-ink">Faith Lens</h3>
+<p class="font-body text-[16px] leading-relaxed text-secondary mt-1">Neulearn is built around a non-denominational, Jesus-centered Christian frame. The Faith Lens — a small open-book button with a warm-gold halo — appears on every content screen so your child can always tap to explore. You decide how prominently faith content shows up in lessons themselves.</p>
+</div>
+</div>
+<div class="space-y-4 px-2"><div class="space-y-3">
+<!-- Option 1: Subtle -->
+<label class="relative flex flex-col p-5 bg-raised rounded-[24px] border border-ink/5 cursor-pointer hover:border-faith/30 transition-all">
+<input checked="" class="hidden peer" name="faith_visibility" type="radio" value="subtle"/>
+<div class="flex justify-between items-start">
+<span class="block font-body text-[16px] text-ink font-medium">Subtle</span>
+<div class="w-2 h-2 rounded-full peer-checked:bg-faith transition-colors mt-2"></div>
+</div>
+<p class="mt-1 font-body text-[14px] leading-relaxed text-secondary opacity-70">
+      The Faith Lens button always glows softly on every screen — your child taps it whenever they're curious. Lessons themselves stay focused on character virtues.
+    </p>
+<div class="absolute inset-0 rounded-[24px] border-2 border-transparent peer-checked:border-faith/40 pointer-events-none"></div>
+</label>
+<!-- Option 2: Woven in -->
+<label class="relative flex flex-col p-5 bg-raised rounded-[24px] border border-ink/5 cursor-pointer hover:border-faith/30 transition-all">
+<input class="hidden peer" name="faith_visibility" type="radio" value="woven"/>
+<div class="flex justify-between items-start">
+<span class="block font-body text-[16px] text-ink font-medium">Woven in</span>
+<div class="w-2 h-2 rounded-full peer-checked:bg-faith transition-colors mt-2"></div>
+</div>
+<p class="mt-1 font-body text-[14px] leading-relaxed text-secondary opacity-70">
+      A brief Faith perspective appears alongside lessons; tap the Faith Lens for the full passage.
+    </p>
+<div class="absolute inset-0 rounded-[24px] border-2 border-transparent peer-checked:border-faith/40 pointer-events-none"></div>
+</label>
+<!-- Option 3: Centered -->
+<label class="relative flex flex-col p-5 bg-raised rounded-[24px] border border-ink/5 cursor-pointer hover:border-faith/30 transition-all">
+<input class="hidden peer" name="faith_visibility" type="radio" value="centered"/>
+<div class="flex justify-between items-start">
+<span class="block font-body text-[16px] text-ink font-medium">Centered</span>
+<div class="w-2 h-2 rounded-full peer-checked:bg-faith transition-colors mt-2"></div>
+</div>
+<p class="mt-1 font-body text-[14px] leading-relaxed text-secondary opacity-70">
+      Faith integrated throughout each lesson — scripture and Jesus-centered perspective in the lesson body. Faith Lens panel opens by default.
+    </p>
+<div class="absolute inset-0 rounded-[24px] border-2 border-transparent peer-checked:border-faith/40 pointer-events-none"></div>
+</label>
+</div></div>
+</section>
+<!-- Safety Note -->
+<section class="mb-12 flex gap-3 items-start">
+<span class="material-symbols-outlined text-ari text-[18px] shrink-0">verified_user</span>
+<p class="font-body italic text-[13px] leading-relaxed text-secondary opacity-80">
+                You'll always see everything your child does... built like Facebook Messenger Kids, but warmer.
+            </p>
+</section>
+<!-- CTA Section -->
+<section class="space-y-4">
+<button class="w-full py-4 bg-ari text-surface font-body font-medium text-[16px] rounded-[12px] shadow-sm hover:opacity-90 active:scale-[0.98] transition-all duration-300">
+                Continue
+            </button>
+<p class="text-center font-body text-[11px] text-secondary opacity-50 uppercase tracking-wider">
+                We'll ask just a few more questions on the next screen.
+            </p>
+</section>
+<!-- Footer / Stepper -->
+<footer class="mt-20 flex flex-col items-center">
+<div class="flex gap-2 mb-3">
+<div class="w-1.5 h-1.5 rounded-full bg-ari"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-ink/10"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-ink/10"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-ink/10"></div>
+</div>
+<span class="font-body text-[11px] tracking-[0.2em] text-secondary uppercase">Step 1 of 4</span>
+</footer>
+</main>
+</body></html>
