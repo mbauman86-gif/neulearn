@@ -12,7 +12,17 @@ import { useLocation, useRoute } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LessonPlayerCub } from "@/components/v2/LessonPlayerCub";
 import type { LessonStep } from "@/components/v2/primitives/ProgressChip";
+import {
+  AriIntervention,
+  type InterventionActionTag,
+} from "@/components/v2/primitives/AriIntervention";
 import { apiRequest } from "@/lib/queryClient";
+
+interface InterventionResponse {
+  action: InterventionActionTag;
+  severity: "low" | "medium" | "high";
+  reason: string;
+}
 
 interface LessonInstance {
   id: string;
@@ -43,17 +53,19 @@ export default function LessonPage() {
   const queryClient = useQueryClient();
 
   const [step, setStep] = useState<LessonStep>("goal");
+  const [activeIntervention, setActiveIntervention] = useState<InterventionResponse | null>(null);
 
   const { data: lesson, isLoading, error } = useQuery<LessonInstance>({
     queryKey: ["/api/adaptive/lessons", lessonId],
     enabled: !!lessonId,
   });
 
-  const stuckMutation = useMutation({
+  const stuckMutation = useMutation<InterventionResponse>({
     mutationFn: async () =>
       apiRequest("POST", "/api/intervention/manual", { lessonId, request: "stuck" }).then((r) =>
         r.json(),
       ),
+    onSuccess: (rec) => setActiveIntervention(rec),
   });
 
   const breakMutation = useMutation({
@@ -98,40 +110,74 @@ export default function LessonPage() {
     setStep(STEP_ORDER[idx + 1]);
   };
 
-  const handleStuck = async () => {
-    const result = await stuckMutation.mutateAsync().catch(() => null);
-    // Surface the engine's recommendation as a quiet message; full UI transformation
-    // is the next milestone — for now we just log and (optionally) drop a toast.
-    if (result?.action) {
-      console.info("[v2] intervention action:", result.action, result.reason);
+  const handleStuck = () => {
+    stuckMutation.mutate();
+  };
+
+  const handleInterventionDismiss = () => {
+    if (!activeIntervention) {
+      setActiveIntervention(null);
+      return;
+    }
+    // Apply the engine's action when the kid dismisses the overlay. Each action takes
+    // a different effect; over time these can become richer (mid-lesson canvas
+    // transformations rather than overlay-then-resume).
+    switch (activeIntervention.action) {
+      case "take_a_break":
+        navigate("/v2/child/today");
+        return;
+      case "branch_to_prereq":
+      case "swap_modality":
+      case "model_with_ari":
+      case "simplify":
+        // These all signal that the lesson should soft-restart at the show step with
+        // the engine's adaptation. Today we just rewind to "show" and let the lesson
+        // re-render. Future: actually swap content in the canvas.
+        setStep("show");
+        setActiveIntervention(null);
+        return;
+      case "encourage":
+      case "continue":
+      default:
+        setActiveIntervention(null);
+        return;
     }
   };
 
   return (
-    <LessonPlayerCub
-      goal={lesson.goal ?? lesson.objective}
-      focalText={focal.text}
-      focalEmphasis={focal.emphasis}
-      caption={focal.caption}
-      currentStep={step}
-      onStepTap={(s) => {
-        // Only allow tapping completed steps
-        if (STEP_ORDER.indexOf(s) < STEP_ORDER.indexOf(step)) {
-          setStep(s);
-        }
-      }}
-      currencies={{ depth: 0, explore: 0, comeback: 0 }}
-      faithLens={{
-        scripture: lesson.faithIntegration?.scripture ?? "",
-        tieIn: lesson.faithIntegration?.tieIn ?? "",
-        optionalPrayer: lesson.faithIntegration?.optionalPrayer,
-      }}
-      faithMode="subtle"
-      onStuck={handleStuck}
-      onBreak={() => breakMutation.mutate()}
-      onAdvance={handleAdvance}
-      canAdvance={!completeMutation.isPending}
-    />
+    <>
+      <LessonPlayerCub
+        goal={lesson.goal ?? lesson.objective}
+        focalText={focal.text}
+        focalEmphasis={focal.emphasis}
+        caption={focal.caption}
+        currentStep={step}
+        onStepTap={(s) => {
+          // Only allow tapping completed steps
+          if (STEP_ORDER.indexOf(s) < STEP_ORDER.indexOf(step)) {
+            setStep(s);
+          }
+        }}
+        currencies={{ depth: 0, explore: 0, comeback: 0 }}
+        faithLens={{
+          scripture: lesson.faithIntegration?.scripture ?? "",
+          tieIn: lesson.faithIntegration?.tieIn ?? "",
+          optionalPrayer: lesson.faithIntegration?.optionalPrayer,
+        }}
+        faithMode="subtle"
+        onStuck={handleStuck}
+        onBreak={() => breakMutation.mutate()}
+        onAdvance={handleAdvance}
+        canAdvance={!completeMutation.isPending}
+      />
+      {activeIntervention && (
+        <AriIntervention
+          action={activeIntervention.action}
+          reason={activeIntervention.reason}
+          onDismiss={handleInterventionDismiss}
+        />
+      )}
+    </>
   );
 }
 
