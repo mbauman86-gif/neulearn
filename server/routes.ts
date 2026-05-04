@@ -13,6 +13,7 @@ import { z } from "zod";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
+import { createHash } from "node:crypto";
 
 // OpenAI client using Replit AI proxy for chat completions
 const openai = new OpenAI({
@@ -2716,6 +2717,14 @@ Does the child's answer meet the criteria?`
           );
           
           if (matchedSkill) {
+            // contextTag identifies the problem framing this lesson represents. Without
+            // varied contexts the kid can't earn promotion past DEVELOPING (mastery-real
+            // logic in progressionEngine.updateChildMastery). Prefer the template id;
+            // fall back to mode+difficulty so AI-generated lessons still register a
+            // distinct context per (mode, difficulty) tuple.
+            const contextTag =
+              lesson.lessonTemplateId ||
+              `ai:${lesson.modeUsed}:${lesson.difficultyUsed}`;
             await progressionEngine.updateChildMastery(
               lesson.childId,
               matchedSkill.id,
@@ -2723,6 +2732,7 @@ Does the child's answer meet the criteria?`
                 isCorrect: accuracy >= 70,
                 confidence: accuracy,
                 hintsUsed,
+                contextTag,
               }
             );
           }
@@ -2938,62 +2948,306 @@ Does the child's answer meet the criteria?`
     }
   });
   
-  // Generate audio with word-level timestamps for synchronized highlighting
+  // ----- Karaoke audio cache helpers -----
+  // Hash that uniquely identifies a synthesized passage. Same text + voice + speed = same
+  // hash = cache hit. Without this cache every read-along play burns an OpenAI round-trip;
+  // with it, only the first one does. Critical cost guardrail (see Phase 1 infra audit).
+  const audioContentHash = (text: string, voice: string, speed: string | number) =>
+    createHash("sha256").update(`${voice}|${speed}|${text.trim()}`).digest("hex");
+
+  // Synthesize a passage (or return a cache hit). Used by both the legacy
+  // `/api/adaptive/lessons/:lessonId/audio-with-timestamps` endpoint and the v2
+  // `/api/audio-cache` POST endpoint.
+  async function synthesizeAndCache(text: string, opts?: { voice?: string; speed?: number }) {
+    const voice = opts?.voice ?? "nova";
+    const speed = opts?.speed ?? 0.9;
+    const speedStr = String(speed);
+    const contentHash = audioContentHash(text, voice, speedStr);
+
+    const cached = await storage.getAudioCacheByHash(contentHash);
+    if (cached) {
+      // Return the cached row's audio. For Phase 1 we serve audio inline as base64 from the
+      // audioUrl when it was stored that way, OR re-fetch from object storage when migrated.
+      // Right now audioUrl holds a `data:audio/mpeg;base64,…` URI for simplicity.
+      await storage.touchAudioCachePlayback(cached.id);
+      return {
+        cacheId: cached.id,
+        audioBase64: cached.audioUrl.startsWith("data:audio/mpeg;base64,")
+          ? cached.audioUrl.slice("data:audio/mpeg;base64,".length)
+          : cached.audioUrl, // future: object-storage URL
+        wordTimestamps: cached.wordTimestamps,
+        duration: cached.durationMs ? cached.durationMs / 1000 : 0,
+        cached: true,
+      };
+    }
+
+    // Cache miss — synthesize.
+    const mp3Response = await openaiDirect.audio.speech.create({
+      model: "tts-1",
+      voice,
+      input: text,
+      speed,
+    });
+    const audioBuffer = Buffer.from(await mp3Response.arrayBuffer());
+
+    const audioFile = new File([audioBuffer], "speech.mp3", { type: "audio/mpeg" });
+    const transcription = await openaiDirect.audio.transcriptions.create({
+      file: audioFile,
+      model: "whisper-1",
+      response_format: "verbose_json",
+      timestamp_granularities: ["word"],
+    });
+    const wordTimestamps =
+      (transcription as any).words?.map((w: any) => ({
+        word: w.word,
+        start: w.start,
+        end: w.end,
+      })) ?? [];
+    const durationSec = (transcription as any).duration ?? 0;
+    const audioBase64 = audioBuffer.toString("base64");
+
+    // Store as a base64 data URI in audioUrl for now. When we migrate to object storage,
+    // upload the buffer to a bucket and store the GCS/S3 URL here instead — no API change.
+    const { id } = await storage.createAudioCache({
+      contentHash,
+      text,
+      voice,
+      speed: speedStr,
+      audioUrl: `data:audio/mpeg;base64,${audioBase64}`,
+      audioBytes: audioBuffer.byteLength,
+      durationMs: Math.round(durationSec * 1000),
+      wordTimestamps,
+    });
+
+    return {
+      cacheId: id,
+      audioBase64,
+      wordTimestamps,
+      duration: durationSec,
+      cached: false,
+    };
+  }
+
+  // GET /api/audio-cache/:id — fetch a cached audio + timestamps payload by id.
+  // Consumed by the v2 KaraokeText component (client/src/hooks/useKaraoke.ts).
+  app.get("/api/audio-cache/:id", requireAuth, async (req: any, res) => {
+    try {
+      const cached = await storage.getAudioCacheById(req.params.id);
+      if (!cached) return res.status(404).json({ error: "Audio not found" });
+
+      const audioBase64 = cached.audioUrl.startsWith("data:audio/mpeg;base64,")
+        ? cached.audioUrl.slice("data:audio/mpeg;base64,".length)
+        : cached.audioUrl;
+
+      await storage.touchAudioCachePlayback(cached.id);
+
+      res.json({
+        audio: audioBase64,
+        audioType: "audio/mpeg",
+        wordTimestamps: cached.wordTimestamps,
+        duration: cached.durationMs ? cached.durationMs / 1000 : 0,
+      });
+    } catch (error: any) {
+      console.error("Error fetching audio cache:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch audio" });
+    }
+  });
+
+  // POST /api/audio-cache — synthesize (or hit cache) and return id + payload.
+  // Used during lesson template authoring and by clients that want to ensure a passage
+  // is cached for later playback. Body: { text: string, voice?: string, speed?: number }.
+  app.post("/api/audio-cache", requireAuth, async (req: any, res) => {
+    try {
+      const { text, voice, speed } = req.body ?? {};
+      if (!text || typeof text !== "string" || !text.trim()) {
+        return res.status(400).json({ error: "No text provided" });
+      }
+      if (text.length > 4000) {
+        // OpenAI TTS hard cap is 4096 chars; we leave a small margin.
+        return res.status(413).json({ error: "Text too long (max 4000 chars)" });
+      }
+      const result = await synthesizeAndCache(text, { voice, speed });
+      res.json({
+        id: result.cacheId,
+        audio: result.audioBase64,
+        audioType: "audio/mpeg",
+        wordTimestamps: result.wordTimestamps,
+        duration: result.duration,
+        cached: result.cached,
+      });
+    } catch (error: any) {
+      console.error("Error in /api/audio-cache:", error);
+      res.status(500).json({ error: error.message || "Failed to synthesize audio" });
+    }
+  });
+
+  // ----- Mastery checks (separate from practice) -----
+  // Build a fresh mastery check for a child + skill. Items come from the template's
+  // checkpoint or challenge bank, NOT the practice (formative) bank.
+  app.post("/api/mastery-check/build", requireAuth, async (req: any, res) => {
+    try {
+      const { childId, skillId, skillName, templateId, tier, itemCount } = req.body ?? {};
+      if (!childId || !skillId || !skillName) {
+        return res.status(400).json({ error: "childId, skillId, skillName required" });
+      }
+      // Authorization: parent must own this child, or child must be self.
+      if (req.session.userId) {
+        const child = await storage.getChildById(childId);
+        if (!child || child.parentId !== req.session.userId) {
+          return res.status(403).json({ error: "Access denied" });
+        }
+      } else if (req.session.childId && req.session.childId !== childId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { buildMasteryCheck } = await import("./masteryCheck");
+      const result = await buildMasteryCheck({
+        childId,
+        skillId,
+        skillName,
+        templateId,
+        tier,
+        itemCount,
+      });
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error in /api/mastery-check/build:", error);
+      res.status(400).json({ error: error.message || "Failed to build mastery check" });
+    }
+  });
+
+  // Score a completed mastery check and feed the verdict into the progression engine.
+  app.post("/api/mastery-check/:lessonId/score", requireAuth, async (req: any, res) => {
+    try {
+      const lesson = await storage.getLessonInstanceById(req.params.lessonId);
+      if (!lesson) return res.status(404).json({ error: "Lesson not found" });
+      if (req.session.childId && req.session.childId !== lesson.childId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { scoreMasteryCheck } = await import("./masteryCheck");
+      const verdict = await scoreMasteryCheck(lesson.id);
+
+      // Feed the verdict into the progression engine. The mastery-check verdict counts
+      // as exactly one attempt against the kid's success record for this skill, but it's
+      // a heavily weighted attempt — it's the only thing that gates promotion past
+      // DEVELOPING because the gates also require varied contexts and spacing.
+      if (lesson.targetSkillName) {
+        const allSkills = await storage.getAllSkills();
+        const matchedSkill = allSkills.find(
+          (s) =>
+            s.name === lesson.targetSkillName ||
+            s.name.toLowerCase().replace(/_/g, " ") === lesson.targetSkillName.toLowerCase().replace(/_/g, " "),
+        );
+        if (matchedSkill) {
+          const { progressionEngine } = await import("./progressionEngine");
+          await progressionEngine.updateChildMastery(lesson.childId, matchedSkill.id, {
+            isCorrect: verdict.passed,
+            confidence: verdict.accuracy * 100,
+            contextTag: lesson.lessonTemplateId
+              ? `mastery-check:${lesson.lessonTemplateId}`
+              : `mastery-check:${lesson.modeUsed}`,
+          });
+        }
+      }
+
+      res.json(verdict);
+    } catch (error: any) {
+      console.error("Error in /api/mastery-check/score:", error);
+      res.status(500).json({ error: error.message || "Failed to score mastery check" });
+    }
+  });
+
+  // ----- Intervention engine -----
+  // Reads recent learning signals and tells the lesson player what to do RIGHT NOW.
+  // Replaces the previous pattern where signals were collected but never consumed.
+
+  // Get a recommendation for a lesson in progress. Player polls this after each outcome
+  // (or whenever it wants a fresh suggestion). Response shape mirrors the intervention
+  // engine's InterventionRecommendation type.
+  app.get("/api/intervention/recommend/:lessonId", requireAuth, async (req: any, res) => {
+    try {
+      const lesson = await storage.getLessonInstanceById(req.params.lessonId);
+      if (!lesson) return res.status(404).json({ error: "Lesson not found" });
+      if (req.session.childId && req.session.childId !== lesson.childId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+      if (req.session.userId) {
+        const child = await storage.getChildById(lesson.childId);
+        if (!child || child.parentId !== req.session.userId) {
+          return res.status(403).json({ error: "Access denied" });
+        }
+      }
+      const { recommendIntervention } = await import("./interventionEngine");
+      const rec = await recommendIntervention({
+        childId: lesson.childId,
+        lessonInstanceId: lesson.id,
+      });
+      res.json(rec);
+    } catch (error: any) {
+      console.error("Error in /api/intervention/recommend:", error);
+      res.status(500).json({ error: error.message || "Failed to recommend intervention" });
+    }
+  });
+
+  // Manual "I'm stuck" / "Take a break" — the kid told us directly. We honor it AND
+  // record it as a learning signal so the temperament model picks it up over time.
+  app.post("/api/intervention/manual", requireAuth, async (req: any, res) => {
+    try {
+      const { lessonId, request } = req.body ?? {};
+      if (!lessonId || (request !== "stuck" && request !== "break")) {
+        return res.status(400).json({ error: "lessonId and request ('stuck' | 'break') required" });
+      }
+      const lesson = await storage.getLessonInstanceById(lessonId);
+      if (!lesson) return res.status(404).json({ error: "Lesson not found" });
+      if (req.session.childId && req.session.childId !== lesson.childId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const { progressionEngine } = await import("./progressionEngine");
+      await progressionEngine.recordLearningSignal(
+        lesson.childId,
+        request === "stuck" ? "MANUAL_STUCK" : "MANUAL_BREAK",
+        {
+          lessonInstanceId: lesson.id,
+          expressedFrustration: request === "stuck",
+        },
+      );
+
+      const { manualInterventionAction } = await import("./interventionEngine");
+      res.json(manualInterventionAction(request));
+    } catch (error: any) {
+      console.error("Error in /api/intervention/manual:", error);
+      res.status(500).json({ error: error.message || "Failed to process intervention" });
+    }
+  });
+
+  // Legacy endpoint kept for backwards compatibility — now goes through the cache so
+  // repeat reads of the same passage are free. Lesson-scoped authorization preserved.
   app.post("/api/adaptive/lessons/:lessonId/audio-with-timestamps", requireAuth, async (req: any, res) => {
     try {
       const lessonId = req.params.lessonId;
       const { text } = req.body;
-      
+
       if (!text || !text.trim()) {
         return res.status(400).json({ error: "No text provided" });
       }
-      
+
       const lesson = await storage.getLessonInstanceById(lessonId);
       if (!lesson) {
         return res.status(404).json({ error: "Lesson not found" });
       }
-      
-      // Authorization
+
       if (req.session.childId && req.session.childId !== lesson.childId) {
         return res.status(403).json({ error: "Access denied" });
       }
-      
-      // Step 1: Generate TTS audio with OpenAI
-      const mp3Response = await openaiDirect.audio.speech.create({
-        model: "tts-1",
-        voice: "nova",
-        input: text,
-        speed: 0.9, // Slightly slower for young learners
-      });
-      
-      const audioBuffer = Buffer.from(await mp3Response.arrayBuffer());
-      
-      // Step 2: Transcribe with Whisper to get word-level timestamps
-      // Create a File-like object from the buffer for the API
-      const audioFile = new File([audioBuffer], "speech.mp3", { type: "audio/mpeg" });
-      
-      const transcription = await openaiDirect.audio.transcriptions.create({
-        file: audioFile,
-        model: "whisper-1",
-        response_format: "verbose_json",
-        timestamp_granularities: ["word"],
-      });
-      
-      // Extract word timestamps from the response
-      const wordTimestamps = (transcription as any).words?.map((w: any) => ({
-        word: w.word,
-        start: w.start,
-        end: w.end,
-      })) || [];
-      
-      // Return audio as base64 along with word timestamps
-      const audioBase64 = audioBuffer.toString('base64');
-      
+
+      const result = await synthesizeAndCache(text);
       res.json({
-        audio: audioBase64,
-        audioType: 'audio/mpeg',
-        wordTimestamps,
-        duration: (transcription as any).duration || 0,
+        audio: result.audioBase64,
+        audioType: "audio/mpeg",
+        wordTimestamps: result.wordTimestamps,
+        duration: result.duration,
       });
     } catch (error: any) {
       console.error("Error generating audio with timestamps:", error);

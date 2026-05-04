@@ -223,9 +223,17 @@ export const childSkillProgress = pgTable("child_skill_progress", {
   // - contextVarietyCount tracks how many distinct problem framings the child has demonstrated
   //   the skill across (gates promotion to FLUENT and TRANSFER)
   // - contextTagsSeen lists which framings have been seen, so we don't double-count repeats
+  // - practiceDaysCount counts distinct CALENDAR DAYS the kid practiced this skill — gates
+  //   promotion to PROFICIENT (≥2 days) and FLUENT (≥4 days). Prevents mastery from being
+  //   awarded inside a single cram session.
+  // - firstProficientAt timestamps the moment the kid first hit PROFICIENT — used by the
+  //   FLUENT and TRANSFER retention checks ("still demonstrating the skill 7+ days later").
   lastPracticeTimestamp: timestamp("last_practice_timestamp"),
   contextVarietyCount: integer("context_variety_count").notNull().default(0),
   contextTagsSeen: json("context_tags_seen").$type<string[]>().default(sql`'[]'::json`),
+  practiceDaysCount: integer("practice_days_count").notNull().default(0),
+  firstProficientAt: timestamp("first_proficient_at"),
+  firstFluentAt: timestamp("first_fluent_at"),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 

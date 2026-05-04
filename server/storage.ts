@@ -1,8 +1,9 @@
 import { db } from "./db";
-import { 
+import {
   users, children, childSettings, plans, tasks, quizzes, rewardState, devotionals,
   skills, childSkillProgress, taskSkills, taskOutcomes,
   lessonTemplates, lessonInstances, lessonAttempts, parentLessons,
+  lessonAudioCache,
   avatarState, badgeDefinitions, earnedBadges, inventoryItems, childInventory, levelThresholds,
   worldDefinitions, worldTools, childWorldProgress, childWorldTools, journeyTiles,
   buddyLinks, activityEvents, activityReactions,
@@ -250,6 +251,33 @@ export interface IStorage {
     assessmentBank?: { formative: AssessmentQuestion[]; checkpoint: AssessmentQuestion[]; challenge: AssessmentQuestion[] };
   }): Promise<LessonTemplate>;
   
+  // Lesson audio cache (TTS + Whisper word timestamps)
+  getAudioCacheById(id: string): Promise<{
+    id: string;
+    contentHash: string;
+    text: string;
+    voice: string;
+    speed: string;
+    audioUrl: string;
+    audioBytes: number | null;
+    durationMs: number | null;
+    wordTimestamps: Array<{ word: string; start: number; end: number }>;
+    createdAt: Date;
+    lastPlayedAt: Date | null;
+  } | undefined>;
+  getAudioCacheByHash(contentHash: string): Promise<Awaited<ReturnType<IStorage["getAudioCacheById"]>>>;
+  createAudioCache(data: {
+    contentHash: string;
+    text: string;
+    voice: string;
+    speed: string;
+    audioUrl: string;
+    audioBytes?: number;
+    durationMs?: number;
+    wordTimestamps: Array<{ word: string; start: number; end: number }>;
+  }): Promise<{ id: string }>;
+  touchAudioCachePlayback(id: string): Promise<void>;
+
   // Lesson instance operations
   getLessonInstanceById(id: string): Promise<LessonInstance | undefined>;
   getLessonInstancesForChild(childId: string, date?: string): Promise<LessonInstance[]>;
@@ -273,6 +301,8 @@ export interface IStorage {
     faithIntegration?: { scripture?: string; tieIn?: string; optionalPrayer?: string };
     date: string;
     parentLessonId?: string;
+    /** Distinguishes practice from mastery-check items. Default 'PRACTICE'. */
+    kind?: "PRACTICE" | "MASTERY_CHECK";
   }): Promise<LessonInstance>;
   updateLessonInstanceStatus(id: string, status: string, pointsEarned?: number): Promise<LessonInstance | undefined>;
   skipLessonInstance(id: string, reason?: string): Promise<LessonInstance | undefined>;
@@ -1719,6 +1749,7 @@ export class DbStorage implements IStorage {
     faithIntegration?: { scripture?: string; tieIn?: string; optionalPrayer?: string };
     date: string;
     parentLessonId?: string;
+    kind?: "PRACTICE" | "MASTERY_CHECK";
   }): Promise<LessonInstance> {
     const [instance] = await db.insert(lessonInstances).values({
       childId: data.childId,
@@ -1736,7 +1767,8 @@ export class DbStorage implements IStorage {
       parentNote: data.parentNote,
       assessment: data.assessment,
       parentLessonId: data.parentLessonId,
-      faithIntegration: data.faithIntegration,
+      faithIntegration: data.faithIntegration ?? {},
+      kind: data.kind ?? "PRACTICE",
       date: data.date,
     }).returning();
     return instance;
@@ -4458,6 +4490,66 @@ export class DbStorage implements IStorage {
       }
     }
     return undefined;
+  }
+
+  // ----- Lesson audio cache -----
+  // TTS audio + Whisper word timestamps cached by content hash. Critical cost guardrail —
+  // without this every read-along play would burn an OpenAI round-trip. See ENV.md for the
+  // OpenAI billing limits we set as a backup safety net.
+
+  async getAudioCacheById(id: string) {
+    const [row] = await db.select().from(lessonAudioCache).where(eq(lessonAudioCache.id, id)).limit(1);
+    if (!row) return undefined;
+    return {
+      ...row,
+      wordTimestamps: (row.wordTimestamps as Array<{ word: string; start: number; end: number }>) ?? [],
+    };
+  }
+
+  async getAudioCacheByHash(contentHash: string) {
+    const [row] = await db
+      .select()
+      .from(lessonAudioCache)
+      .where(eq(lessonAudioCache.contentHash, contentHash))
+      .limit(1);
+    if (!row) return undefined;
+    return {
+      ...row,
+      wordTimestamps: (row.wordTimestamps as Array<{ word: string; start: number; end: number }>) ?? [],
+    };
+  }
+
+  async createAudioCache(data: {
+    contentHash: string;
+    text: string;
+    voice: string;
+    speed: string;
+    audioUrl: string;
+    audioBytes?: number;
+    durationMs?: number;
+    wordTimestamps: Array<{ word: string; start: number; end: number }>;
+  }) {
+    const [row] = await db
+      .insert(lessonAudioCache)
+      .values({
+        contentHash: data.contentHash,
+        text: data.text,
+        voice: data.voice,
+        speed: data.speed,
+        audioUrl: data.audioUrl,
+        audioBytes: data.audioBytes ?? null,
+        durationMs: data.durationMs ?? null,
+        wordTimestamps: data.wordTimestamps,
+      })
+      .returning({ id: lessonAudioCache.id });
+    return { id: row.id };
+  }
+
+  async touchAudioCachePlayback(id: string): Promise<void> {
+    await db
+      .update(lessonAudioCache)
+      .set({ lastPlayedAt: new Date() })
+      .where(eq(lessonAudioCache.id, id));
   }
 }
 

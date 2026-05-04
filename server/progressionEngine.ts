@@ -406,6 +406,27 @@ export class ProgressionEngine {
     });
   }
   
+  /**
+   * Update a child's mastery for one skill based on a single attempt's outcome.
+   *
+   * Mastery-real transition rules (replaces shallow 75%/3-attempts pattern, 2026-05-04):
+   *
+   *   DEVELOPING  → ≥1 attempt
+   *   PROFICIENT  → ≥80% rate AND ≥5 attempts AND ≥3 distinct contexts AND ≥2 distinct days
+   *   FLUENT      → ≥90% rate AND ≥7 attempts AND ≥4 distinct contexts AND ≥4 distinct days
+   *                 AND already PROFICIENT for ≥3 days (retention check)
+   *   TRANSFER    → ≥95% rate AND ≥10 attempts AND ≥5 distinct contexts AND ≥7 distinct days
+   *                 AND already FLUENT for ≥7 days (long retention)
+   *
+   * `contextTag` should be a stable identifier of the problem framing — typically the
+   * lesson template id. If the same tag is seen repeatedly, it does NOT count as a new
+   * context. Without varied contexts a kid can't earn promotion past DEVELOPING — this is
+   * the entire point of the rewrite.
+   *
+   * Demotion: if a child gets multiple wrong in a row after promotion, we mark
+   * needsReinforcement and let the next session's queue handle re-teaching, but we don't
+   * silently drop their state — visible struggle is what triggers the intervention engine.
+   */
   async updateChildMastery(
     childId: string,
     skillId: string,
@@ -414,6 +435,7 @@ export class ProgressionEngine {
       confidence?: number;
       hintsUsed?: number;
       voiceScore?: number;
+      contextTag?: string;
     }
   ): Promise<void> {
     const existing = await db.select().from(childSkillProgress)
@@ -422,39 +444,84 @@ export class ProgressionEngine {
         eq(childSkillProgress.skillId, skillId)
       ))
       .limit(1);
-    
+
     const current = existing[0];
-    const now = new Date().toISOString().split('T')[0];
-    
-    let newMasteryLevel = current?.masteryLevel || "DEVELOPING";
+    const nowDate = new Date();
+    const today = nowDate.toISOString().split('T')[0];
+
+    const previousMastery = current?.masteryLevel || "NOT_STARTED";
     let evidenceCount = (current?.evidenceCount || 0) + 1;
     let successCount = current?.successCount || 0;
     let attemptCount = (current?.attemptCount || 0) + 1;
-    
-    if (outcome.isCorrect) {
-      successCount++;
-    }
-    
+    if (outcome.isCorrect) successCount++;
     const successRate = attemptCount > 0 ? successCount / attemptCount : 0;
-    
-    // 5-state mastery progression:
-    // NOT_STARTED → DEVELOPING → PROFICIENT → FLUENT → TRANSFER
-    // TRANSFER requires explicit evidence of applying skill in new contexts
-    if (current?.masteryLevel === "FLUENT" && successRate >= 0.95 && attemptCount >= 5) {
-      // TRANSFER is earned by demonstrating application in varied contexts
-      newMasteryLevel = "TRANSFER";
-    } else if (successRate >= 0.9 && attemptCount >= 4) {
-      newMasteryLevel = "FLUENT";
-    } else if (successRate >= 0.75 && attemptCount >= 3) {
-      newMasteryLevel = "PROFICIENT";
-    } else if (attemptCount >= 1) {
-      newMasteryLevel = "DEVELOPING";
+
+    // Track varied contexts. A new context (lesson template id, mode, etc.) bumps the variety
+    // counter only the first time it's seen for this child+skill pair.
+    const previousTags: string[] = (current?.contextTagsSeen as string[] | null) ?? [];
+    const tagsSet = new Set(previousTags);
+    if (outcome.contextTag && !tagsSet.has(outcome.contextTag)) {
+      tagsSet.add(outcome.contextTag);
     }
-    
-    const needsReinforcement = !outcome.isCorrect || 
+    const contextVarietyCount = tagsSet.size;
+    const contextTagsSeen = Array.from(tagsSet);
+
+    // Track distinct calendar days. Increment when today is a different day than the last
+    // recorded practice date. This prevents a kid from cramming all evidence into one session.
+    const isNewDay = current?.lastPracticeDate !== today;
+    const practiceDaysCount = (current?.practiceDaysCount ?? 0) + (isNewDay ? 1 : 0);
+
+    // Retention windows for promotion gates.
+    const daysSinceProficient = current?.firstProficientAt
+      ? Math.floor((nowDate.getTime() - new Date(current.firstProficientAt).getTime()) / 86400000)
+      : 0;
+    const daysSinceFluent = current?.firstFluentAt
+      ? Math.floor((nowDate.getTime() - new Date(current.firstFluentAt).getTime()) / 86400000)
+      : 0;
+
+    // Compute the new mastery level. We never auto-demote — we surface struggle via
+    // needsReinforcement and let the engine route remedial content.
+    let newMasteryLevel = previousMastery === "NOT_STARTED" ? "DEVELOPING" : previousMastery;
+
+    const proficientGate =
+      successRate >= 0.8 && attemptCount >= 5 && contextVarietyCount >= 3 && practiceDaysCount >= 2;
+    const fluentGate =
+      successRate >= 0.9 &&
+      attemptCount >= 7 &&
+      contextVarietyCount >= 4 &&
+      practiceDaysCount >= 4 &&
+      daysSinceProficient >= 3;
+    const transferGate =
+      successRate >= 0.95 &&
+      attemptCount >= 10 &&
+      contextVarietyCount >= 5 &&
+      practiceDaysCount >= 7 &&
+      daysSinceFluent >= 7;
+
+    if (transferGate && previousMastery === "FLUENT") {
+      newMasteryLevel = "TRANSFER";
+    } else if (fluentGate && (previousMastery === "PROFICIENT" || previousMastery === "FLUENT")) {
+      newMasteryLevel = "FLUENT";
+    } else if (proficientGate && (previousMastery === "DEVELOPING" || previousMastery === "PROFICIENT")) {
+      newMasteryLevel = "PROFICIENT";
+    }
+
+    const needsReinforcement =
+      !outcome.isCorrect ||
       (outcome.hintsUsed !== undefined && outcome.hintsUsed >= 2) ||
       (outcome.voiceScore !== undefined && outcome.voiceScore < 60);
-    
+
+    // Stamp first-promotion timestamps the moment we cross each gate, so future calls can
+    // run the retention checks against them. Don't overwrite once set.
+    const firstProficientAt =
+      current?.firstProficientAt ??
+      (newMasteryLevel === "PROFICIENT" || newMasteryLevel === "FLUENT" || newMasteryLevel === "TRANSFER"
+        ? nowDate
+        : null);
+    const firstFluentAt =
+      current?.firstFluentAt ??
+      (newMasteryLevel === "FLUENT" || newMasteryLevel === "TRANSFER" ? nowDate : null);
+
     if (current) {
       await db.update(childSkillProgress)
         .set({
@@ -462,10 +529,16 @@ export class ProgressionEngine {
           evidenceCount,
           successCount,
           attemptCount,
-          lastPracticeDate: now,
+          lastPracticeDate: today,
+          lastPracticeTimestamp: nowDate,
           lastScore: outcome.isCorrect ? 100 : undefined,
           needsReinforcement: needsReinforcement ? true : false,
-          updatedAt: new Date(),
+          contextVarietyCount,
+          contextTagsSeen,
+          practiceDaysCount,
+          firstProficientAt,
+          firstFluentAt,
+          updatedAt: nowDate,
         })
         .where(eq(childSkillProgress.id, current.id));
     } else {
@@ -476,9 +549,15 @@ export class ProgressionEngine {
         evidenceCount,
         successCount,
         attemptCount,
-        lastPracticeDate: now,
+        lastPracticeDate: today,
+        lastPracticeTimestamp: nowDate,
         lastScore: outcome.isCorrect ? 100 : undefined,
         needsReinforcement: needsReinforcement ? true : false,
+        contextVarietyCount,
+        contextTagsSeen,
+        practiceDaysCount: 1,
+        firstProficientAt,
+        firstFluentAt,
       });
     }
   }
