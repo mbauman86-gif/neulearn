@@ -1,7 +1,8 @@
 // Sentry MUST be the very first import so its instrumentation hooks load before
 // any other module is required. Do not move this below other imports.
-import "./sentry";
-import * as Sentry from "@sentry/node";
+// We import via the local wrapper which tolerates @sentry/node not being installed —
+// the wrapper falls back to a noop shim in sandboxes that block npm install.
+import { Sentry } from "./sentry";
 
 import { type Server } from "node:http";
 
@@ -75,8 +76,9 @@ export default async function runApp(
   const server = await registerRoutes(app);
 
   // Sentry's Express error handler must be registered after all controllers
-  // but before any other error-handling middleware.
-  Sentry.setupExpressErrorHandler(app);
+  // but before any other error-handling middleware. Wrapper is a no-op when
+  // @sentry/node isn't installed.
+  Sentry.setupExpressErrorHandler?.(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
