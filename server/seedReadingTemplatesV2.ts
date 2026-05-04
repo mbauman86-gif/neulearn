@@ -199,6 +199,35 @@ export const v2ReadingTemplates: ReadingTemplateData[] = [
 ];
 
 /**
+ * Returns every distinct text passage in the V2 templates that should be pre-rendered
+ * to the karaoke audio cache. Used by the audio-prewarm admin route.
+ *
+ * Includes: objective lines, hands-on/visual/story instruction patterns, and every
+ * assessment-bank prompt. Choice-option strings are NOT prewarmed individually; only
+ * prompts get audio (the kid hears the question; tapping an option triggers a
+ * separate single-word playback at runtime, which still gets cached on first use).
+ */
+export function collectV2PrewarmTexts(): string[] {
+  const out = new Set<string>();
+  for (const tpl of v2ReadingTemplates) {
+    out.add(tpl.objective);
+    for (const mode of [tpl.modes.hands_on, tpl.modes.visual, tpl.modes.story]) {
+      out.add(mode.instructionsPattern);
+    }
+    for (const bank of [
+      tpl.assessmentBank.formative,
+      tpl.assessmentBank.checkpoint,
+      tpl.assessmentBank.challenge,
+    ]) {
+      for (const item of bank) {
+        out.add(item.prompt);
+      }
+    }
+  }
+  return Array.from(out);
+}
+
+/**
  * Idempotent seed: looks up each skill by name and inserts the template only if no
  * template with the same (subject, skillId, gradeBand) tuple already exists. Safe to
  * run multiple times; safe to run alongside the legacy seeder in seedLessonTemplates.ts.

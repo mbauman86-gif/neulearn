@@ -3053,6 +3053,46 @@ Does the child's answer meet the criteria?`
     }
   });
 
+  // POST /api/audio-cache/prewarm — admin one-shot. Iterates the V2 reading templates
+  // and synthesizes audio for every distinct prompt + objective + mode-instruction
+  // string. Idempotent: skips passages already in the cache (cache hit by content hash).
+  // Run this once before the alpha so the kid hears karaoke instantly instead of
+  // waiting on a fresh OpenAI round-trip.
+  app.post("/api/audio-cache/prewarm", requireAuth, async (req: any, res) => {
+    try {
+      // Parent-only — kids should not be able to trigger bulk synthesis.
+      if (!req.session.userId) {
+        return res.status(403).json({ error: "Parent session required" });
+      }
+      const { collectV2PrewarmTexts } = await import("./seedReadingTemplatesV2");
+      const texts = collectV2PrewarmTexts();
+
+      let synthesized = 0;
+      let alreadyCached = 0;
+      const errors: Array<{ text: string; message: string }> = [];
+
+      for (const text of texts) {
+        try {
+          const result = await synthesizeAndCache(text);
+          if (result.cached) alreadyCached++;
+          else synthesized++;
+        } catch (err: any) {
+          errors.push({ text: text.slice(0, 60), message: err?.message ?? String(err) });
+        }
+      }
+
+      res.json({
+        totalTexts: texts.length,
+        synthesized,
+        alreadyCached,
+        errors,
+      });
+    } catch (error: any) {
+      console.error("Error in /api/audio-cache/prewarm:", error);
+      res.status(500).json({ error: error.message || "Failed to prewarm audio" });
+    }
+  });
+
   // POST /api/audio-cache — synthesize (or hit cache) and return id + payload.
   // Used during lesson template authoring and by clients that want to ensure a passage
   // is cached for later playback. Body: { text: string, voice?: string, speed?: number }.

@@ -35,6 +35,28 @@ When `SENTRY_DSN` / `VITE_SENTRY_DSN` are unset, Sentry is a no-op (safe in deve
 5. Copy that DSN. Paste as `VITE_SENTRY_DSN` in Replit Secrets.
 6. Optional but recommended: in the project settings, enable **Performance → Tracing** and **Issue alerts → email me on new errors**.
 
+## Pre-warm the karaoke audio cache (do this once before the alpha)
+
+After `npm run db:push` and the first server start (which seeds V2 reading templates),
+hit this endpoint as the parent to pre-render the read-along audio for every digraph
+and sight-word lesson:
+
+```bash
+curl -X POST -b cookies.txt https://your-replit.repl.co/api/audio-cache/prewarm
+```
+
+Or in the browser console while logged in as the parent:
+
+```js
+fetch("/api/audio-cache/prewarm", { method: "POST", credentials: "include" }).then(r => r.json())
+```
+
+It's idempotent — safe to run multiple times. Returns a summary like:
+`{ totalTexts: 80, synthesized: 80, alreadyCached: 0, errors: [] }`.
+
+The first run hits OpenAI for each unique passage (~80 round-trips for the V2 set) and
+costs roughly $1-3 in API spend. After that, every kid lesson playback is free.
+
 ## OpenAI cost guardrails (do this in your browser)
 
 While Sentry is being set up, also do this — it takes 60 seconds and prevents a runaway bill:
