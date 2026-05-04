@@ -81,6 +81,37 @@ export default {
           busy: "rgb(239 68 68)",
           offline: "rgb(156 163 175)",
         },
+
+        // Neulearn v2 design tokens. See .stitch/DESIGN.md for the full spec.
+        // Namespaced "nl-*" so they don't collide with shadcn-ui colors.
+        "nl-canvas": "#F5EFE2",
+        "nl-canvas-dim": "#EBE3D2",
+        "nl-raised": "#FBF7EC",
+        "nl-dyslexia": "#FAF1D9",
+        "nl-ink": "#2A2520",
+        "nl-ink-secondary": "#5C5346",
+        "nl-ink-tertiary": "#8C8273",
+        "nl-amber": {
+          50: "#FBF1DC",
+          200: "#F2CF82",
+          500: "#C8923A",
+          700: "#8E6526",
+        },
+        "nl-moss": {
+          50: "#E9EFE0",
+          200: "#B5C99B",
+          500: "#6F8A52",
+          700: "#4D6238",
+        },
+        "nl-slate": {
+          50: "#E2E7EC",
+          200: "#9FB1C0",
+          500: "#496478",
+          700: "#2F4253",
+        },
+        // Reserved Faith Lens color — appears NOWHERE else in the system.
+        "nl-faith": "#D6A85B",
+        "nl-error": "#A14A3A",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -89,6 +120,10 @@ export default {
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
         child: ["var(--font-child)"],
+        // Neulearn v2 typography (.stitch/DESIGN.md §3)
+        "nl-display": ["Newsreader", "Georgia", "serif"],
+        "nl-body": ["Inter", "system-ui", "sans-serif"],
+        "nl-reading": ["'Atkinson Hyperlegible'", "Inter", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

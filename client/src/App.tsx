@@ -19,6 +19,7 @@ import TaskDetail from "./components/TaskDetail";
 import AdaptiveLessonPage from "./pages/AdaptiveLessonPage";
 import SocialHub from "./pages/SocialHub";
 import BuddyProfile from "./pages/BuddyProfile";
+import LessonPlayerCubDemo from "./pages/v2/LessonPlayerCubDemo";
 
 function Loading() {
   return (
@@ -176,6 +177,12 @@ function Router() {
             <BuddyProfile />
           </ProtectedChildRoute>
         )}
+      </Route>
+
+      {/* v2 visual rebuild — preview routes (no auth required during alpha review).
+          See client/src/components/v2/README.md for migration plan. */}
+      <Route path="/v2/preview/lesson-cub">
+        {() => <LessonPlayerCubDemo />}
       </Route>
 
       {/* Fallback */}
