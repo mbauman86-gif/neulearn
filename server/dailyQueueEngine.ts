@@ -167,8 +167,14 @@ async function selectCoreSkills(
     bySubject[skill.subject].push(skill);
   }
 
-  // Shuffle the subject order each day so the same subject doesn't always go first
-  const subjectOrder = Object.keys(bySubject).sort(() => Math.random() - 0.5);
+  // Subjects that already have a DEVELOPING slot are deprioritised so they don't
+  // crowd out subjects that haven't had any representation yet today.
+  const developingSubjectSet = new Set(Object.keys(subjectCounts));
+  const allSubjects = Object.keys(bySubject).sort(() => Math.random() - 0.5);
+  const subjectOrder = [
+    ...allSubjects.filter(s => !developingSubjectSet.has(s)), // subjects with NO slot yet — first pick
+    ...allSubjects.filter(s => developingSubjectSet.has(s)),  // subjects already represented — second pick
+  ];
 
   let pass = 0;
   while (selected.length < count) {
