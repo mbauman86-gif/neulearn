@@ -327,11 +327,30 @@ export class AdaptiveEngine {
       materials: step.materials,
       duration: step.duration,
     }));
-    
+
+    // ASSESSMENT SOURCING (anti-hallucination):
+    // If the lesson template has a populated assessment bank, USE its formative items
+    // for this lesson's assessment. The bank is hand-vetted (V2 templates have ~5 items
+    // in formative; legacy templates may have none). AI-generated questions are only
+    // a fallback when no bank exists — and even then, the prompt's HARD CONSTRAINTS
+    // forbid context-dependent prompts ("the book", "the picture above", etc.).
+    const bankFormative = (template?.assessmentBank?.formative ?? []).filter(
+      (q): q is NonNullable<typeof q> => !!q,
+    );
     const assessment = {
-      questions: lessonContent.check.questions,
+      questions:
+        bankFormative.length > 0
+          ? bankFormative.map((q, i) => ({
+              questionId: q.questionId ?? `bank-${i}`,
+              prompt: q.prompt,
+              type: q.type,
+              options: q.options,
+              correctAnswer: q.correctAnswer,
+              hint: q.hint,
+            }))
+          : lessonContent.check.questions,
     };
-    
+
     const instance = await storage.createLessonInstance({
       childId,
       lessonTemplateId: template?.id,
@@ -513,6 +532,25 @@ EDITORIAL STANCE (non-negotiable):
 - Real-world relevance: tie the skill to something the child can actually use, build, observe, or create in their life.
 - Montessori-style: a child can be at different grade levels per subject. Never frame the child as "behind" or compare them to other kids — meet them where they are.
 - Faith Lens (always present, never hidden): ALWAYS populate the faithIntegration block, regardless of mode. The Christian foundation is part of the product in every mode. The UI decides how prominently it surfaces in the lesson body — but the Faith Lens button is ALWAYS visible and one tap away. Faith mode names parent-facing are "Subtle" / "Woven in" / "Centered" — NEVER use the words "hidden," "off," "disabled," or "no faith" in any generated copy. Use a scholarly, charitable, non-political voice (e.g., the register of teachers like Wes Huff, Tim Keller, or N.T. Wright) — not folksy or proselytizing.
+
+ASSESSMENT QUESTION RULES (HARD CONSTRAINTS):
+The child sees ONLY the question prompt and the option buttons. They cannot consult a book, a worksheet, an earlier image, or anything else. A question that requires external context is broken by design.
+
+FORBIDDEN phrasings - never use any of these in check.questions[].prompt or practicePhase prompts:
+- "the book" / "your book" / "the story we read" / "the picture above" / "the picture" / "the worksheet" / "the page"
+- "how many did you ..." / "what did you find when you ..." / "after you did ..." / "what was the ..."
+- "what did your parent say" / "what did we just talk about" / "remember when ..."
+- Any reference to something the child supposedly did, saw, counted, or read OUTSIDE of this single question.
+
+ALLOWED phrasings:
+- "How many fingers does an octopus have?" - answerable from general knowledge.
+- "Which letter makes the sss sound?" - answerable from the lesson's teach phase.
+- "Pick the word that rhymes with cat." - answerable from the options shown.
+- "What is 2 + 3?" - concrete and self-contained.
+
+If you can't make a self-contained question for a concept, generate FEWER questions. Quality over quantity. Two solid questions beat five hallucinated ones.
+
+The correctAnswer MUST literally appear in the options array for choice/yes_no types - NEVER an answer the kid can't tap.
 
 CRITICAL: Every lesson MUST have exactly 4 sections - GOAL, TEACH, DO, CHECK. Missing any section is a failure.
 
