@@ -273,7 +273,8 @@ export async function getOrCreateDailyQueue(childId: string, date: string) {
 export async function updateQueueItemStatus(
   queueId: string,
   itemId: string,
-  status: "IN_PROGRESS" | "COMPLETED" | "SKIPPED"
+  status: "IN_PROGRESS" | "COMPLETED" | "SKIPPED",
+  lessonInstanceId?: string
 ) {
   const queue = await storage.getDailyQueueById(queueId);
   if (!queue) throw new Error("Queue not found");
@@ -283,6 +284,7 @@ export async function updateQueueItemStatus(
       return {
         ...item,
         status,
+        ...(lessonInstanceId ? { lessonInstanceId } : {}),
         completedAt: status === "COMPLETED" ? new Date().toISOString() : undefined,
       };
     }

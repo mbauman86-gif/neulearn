@@ -102,13 +102,16 @@ export default function TodayPage() {
   }
 
   const handleQueueItemClick = (id: string) => {
-    const item = queueData?.items.find((q) => q.id === id);
-    if (item?.lessonInstanceId) {
-      navigate(`/v2/child/lesson/${item.lessonInstanceId}`);
-    } else if (item) {
-      // Devotional or skill-based items without a precomputed lesson instance need to
-      // generate one on the fly. The legacy /generate endpoint handles that.
-      generateAndOpenLesson(item, navigate).catch((err) => {
+    if (!queueData) return;
+    const item = queueData.items.find((q) => q.id === id);
+    if (!item) return;
+
+    const queueParams = `queueId=${queueData.id}&queueItemId=${item.id}`;
+
+    if (item.lessonInstanceId) {
+      navigate(`/v2/child/lesson/${item.lessonInstanceId}?${queueParams}`);
+    } else if (childId) {
+      generateAndOpenLesson(item, childId, queueData.id, navigate).catch((err) => {
         console.error("Failed to generate lesson:", err);
       });
     }
@@ -164,7 +167,6 @@ export default function TodayPage() {
 }
 
 function friendlyTitleForSkill(skillName: string): string {
-  // Convert "digraph_sh" → "Sounds in words: sh"
   if (skillName.startsWith("digraph_")) {
     const d = skillName.replace("digraph_", "");
     return `Sounds in words: ${d}`;
@@ -188,13 +190,26 @@ function subtitleForSection(section: QueueSection, skillName: string): string {
 
 async function generateAndOpenLesson(
   item: DailyQueueItem,
+  childId: string,
+  queueId: string,
   navigate: (path: string) => void,
 ): Promise<void> {
+  // Mark the queue item IN_PROGRESS immediately so re-tapping resumes rather than regenerates
+  await apiRequest("PATCH", `/api/daily-queue/${queueId}/items/${item.id}`, {
+    status: "IN_PROGRESS",
+  }).catch(() => {});
+
   const res = await apiRequest("POST", "/api/adaptive/lessons/generate", {
     skillName: item.skillName,
   });
   const lesson = await res.json();
   if (lesson?.id) {
-    navigate(`/v2/child/lesson/${lesson.id}`);
+    // Store the lessonInstanceId on the queue item so future taps resume this lesson
+    await apiRequest("PATCH", `/api/daily-queue/${queueId}/items/${item.id}`, {
+      status: "IN_PROGRESS",
+      lessonInstanceId: lesson.id,
+    }).catch(() => {});
+
+    navigate(`/v2/child/lesson/${lesson.id}?queueId=${queueId}&queueItemId=${item.id}`);
   }
 }

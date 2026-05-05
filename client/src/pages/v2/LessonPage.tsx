@@ -55,9 +55,17 @@ const STEP_ORDER: LessonStep[] = ["goal", "show", "try", "check", "done"];
 
 export default function LessonPage() {
   const [, params] = useRoute<{ lessonId: string }>("/v2/child/lesson/:lessonId");
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const lessonId = params?.lessonId ?? "";
   const queryClient = useQueryClient();
+
+  // Pull queueId / queueItemId from the URL search params so we can mark the
+  // daily-queue item COMPLETED when the lesson finishes.
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  const queueId = searchParams.get("queueId") ?? "";
+  const queueItemId = searchParams.get("queueItemId") ?? "";
 
   const [step, setStep] = useState<LessonStep>("goal");
   const [activeIntervention, setActiveIntervention] = useState<InterventionResponse | null>(null);
@@ -88,7 +96,13 @@ export default function LessonPage() {
   const completeMutation = useMutation({
     mutationFn: async () =>
       apiRequest("POST", `/api/adaptive/lessons/${lessonId}/complete`, {}).then((r) => r.json()),
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Mark the daily-queue item COMPLETED so it disappears from the Today screen.
+      if (queueId && queueItemId) {
+        await apiRequest("PATCH", `/api/daily-queue/${queueId}/items/${queueItemId}`, {
+          status: "COMPLETED",
+        }).catch(() => {});
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/daily-queue"] });
       navigate("/v2/child/today");
     },

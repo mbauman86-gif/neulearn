@@ -3739,7 +3739,7 @@ Does the child's answer meet the criteria?`
   app.patch("/api/daily-queue/:queueId/items/:itemId", requireAuth, async (req: any, res) => {
     try {
       const { queueId, itemId } = req.params;
-      const { status } = req.body;
+      const { status, lessonInstanceId } = req.body;
       
       if (!["IN_PROGRESS", "COMPLETED", "SKIPPED"].includes(status)) {
         return res.status(400).json({ error: "Invalid status" });
@@ -3766,7 +3766,7 @@ Does the child's answer meet the criteria?`
       }
 
       const { updateQueueItemStatus } = await import("./dailyQueueEngine");
-      const updated = await updateQueueItemStatus(queueId, itemId, status);
+      const updated = await updateQueueItemStatus(queueId, itemId, status, lessonInstanceId ?? undefined);
       
       res.json(updated);
     } catch (error: any) {
