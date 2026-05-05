@@ -229,16 +229,23 @@ export function collectV2PrewarmTexts(): string[] {
 
 /**
  * Idempotent seed: looks up each skill by name and inserts the template only if no
- * template with the same (subject, skillId, gradeBand) tuple already exists. Safe to
- * run multiple times; safe to run alongside the legacy seeder in seedLessonTemplates.ts.
+ * template with the same (subject, skillName, gradeBand) tuple already exists. Safe
+ * to run multiple times; safe to run alongside the legacy seeder.
+ *
+ * If a template was previously inserted with `targetSkillId = null` (because the
+ * skill row didn't exist yet) and the skill row now exists, this seed backfills
+ * the link. So you can run seedV2Skills + seedV2ReadingTemplates in any order /
+ * any number of times and they'll converge to the right state.
  */
 export async function seedV2ReadingTemplates(): Promise<{
   inserted: number;
   skipped: number;
+  relinked: number;
   unlinkedSkills: string[];
 }> {
   let inserted = 0;
   let skipped = 0;
+  let relinked = 0;
   const unlinkedSkills: string[] = [];
 
   for (const tpl of v2ReadingTemplates) {
@@ -252,8 +259,8 @@ export async function seedV2ReadingTemplates(): Promise<{
       unlinkedSkills.push(tpl.targetSkillName);
     }
 
-    const existing = await db
-      .select({ id: lessonTemplates.id })
+    const [existing] = await db
+      .select()
       .from(lessonTemplates)
       .where(
         and(
@@ -264,8 +271,18 @@ export async function seedV2ReadingTemplates(): Promise<{
       )
       .limit(1);
 
-    if (existing[0]) {
-      skipped++;
+    if (existing) {
+      // Backfill targetSkillId if the skill now exists but the template was inserted
+      // before the skill did. Pure additive update — no other fields touched.
+      if (skill && !existing.targetSkillId) {
+        await db
+          .update(lessonTemplates)
+          .set({ targetSkillId: skill.id })
+          .where(eq(lessonTemplates.id, existing.id));
+        relinked++;
+      } else {
+        skipped++;
+      }
       continue;
     }
 
@@ -283,5 +300,5 @@ export async function seedV2ReadingTemplates(): Promise<{
     inserted++;
   }
 
-  return { inserted, skipped, unlinkedSkills };
+  return { inserted, skipped, relinked, unlinkedSkills };
 }

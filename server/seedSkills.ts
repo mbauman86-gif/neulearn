@@ -246,27 +246,35 @@ const K2_SKILLS: SkillData[] = [
 
 export async function seedSkills(): Promise<void> {
   console.log("Checking if skills need to be seeded...");
-  
+
   const existingSkills = await db.select().from(skills);
-  if (existingSkills.length > 0) {
-    console.log(`Skills table already has ${existingSkills.length} skills. Skipping seed.`);
-    return;
+  if (existingSkills.length === 0) {
+    console.log(`Seeding ${K2_SKILLS.length} K-2 curriculum skills...`);
+    for (const skill of K2_SKILLS) {
+      await db.insert(skills).values({
+        subject: skill.subject,
+        strand: skill.strand,
+        gradeLevel: skill.gradeLevel,
+        standardCode: skill.standardCode,
+        name: skill.name,
+        description: skill.description,
+        orderInStrand: skill.orderInStrand,
+        prerequisiteSkillIds: [],
+      });
+    }
+    console.log("Successfully seeded K-2 curriculum skills!");
+  } else {
+    console.log(`Skills table already has ${existingSkills.length} skills. Skipping legacy seed.`);
   }
-  
-  console.log(`Seeding ${K2_SKILLS.length} K-2 curriculum skills...`);
-  
-  for (const skill of K2_SKILLS) {
-    await db.insert(skills).values({
-      subject: skill.subject,
-      strand: skill.strand,
-      gradeLevel: skill.gradeLevel,
-      standardCode: skill.standardCode,
-      name: skill.name,
-      description: skill.description,
-      orderInStrand: skill.orderInStrand,
-      prerequisiteSkillIds: [],
-    });
+
+  // Always run the V2 skill seed (idempotent — only inserts what's missing). This
+  // adds per-digraph skills + sight-word skill so the V2 reading templates link to
+  // real rows and the daily-queue engine can pick them.
+  try {
+    const { seedV2Skills } = await import("./seedSkillsV2");
+    const { inserted, skipped } = await seedV2Skills();
+    console.log(`V2 reading skills: inserted=${inserted}, skipped=${skipped}`);
+  } catch (err) {
+    console.error("Failed to seed V2 reading skills:", err);
   }
-  
-  console.log("Successfully seeded K-2 curriculum skills!");
 }
