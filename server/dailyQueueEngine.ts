@@ -2,7 +2,14 @@ import { storage } from "./storage";
 import { DailyQueueItem, Child, ChildSkillProgress, Skill } from "@shared/schema";
 
 const DAYS_UNTIL_REVIEW = 7; // Days since last practice before skill needs spiral review
-const CORE_ITEMS_PER_DAY = 2; // Number of new skills to learn each day
+
+// 3 core slots so all three default subjects (Reading, Math, Character) can fit in one day.
+// With 2, a child whose only DEVELOPING skill is in (say) MATH would fill slot 1 from MATH and
+// leave only one round-robin slot for the other two subjects — guaranteeing one of Reading
+// or Character is missing every day. 3 fits all three. If a parent later enables a 4th
+// subject (Writing, Spanish, Science), the round-robin rotates in whichever isn't represented.
+// Spiral Review (2) + Apply (1) + Devotional (1) on top — capped at ~40 min for K-2 sessions.
+const CORE_ITEMS_PER_DAY = 3;
 const REVIEW_ITEMS_PER_DAY = 2; // Number of spiral review items
 const APPLY_ITEMS_PER_DAY = 1; // Number of transfer/application items
 
