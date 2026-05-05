@@ -103,6 +103,303 @@ function digraphTemplate(args: {
 }
 
 export const v2ReadingTemplates: ReadingTemplateData[] = [
+  // ============================================
+  // PHONICS FOUNDATIONS (K) — prereqs for digraphs
+  // Hand-authored for the alpha so non-readers have full-audio templates from day one.
+  // Both target EXISTING skills already in K2_SKILLS (skill names with capitals + spaces),
+  // so the seed will relink them on next start.
+  // ============================================
+  {
+    subject: "READING",
+    targetSkillName: "Letter-Sound Correspondence",
+    gradeBand: "K",
+    objective: "Match each letter to the sound it makes — the foundation of reading.",
+    difficultyLevels: {
+      easy: { customParams: { focusOn: "consonants", letterCount: 5 } },
+      medium: { customParams: { focusOn: "consonants_short_vowels", letterCount: 8 } },
+      hard: { customParams: { focusOn: "all_letters", letterCount: 10 } },
+    },
+    modes: {
+      hands_on: {
+        instructionsPattern:
+          "Use letter tiles or magnetic letters. Pick one up, say its sound, then put it down.",
+        materials: ["letter tiles or magnetic letters"],
+        parentGuidance:
+          "Say the sound first, your child repeats. Then have them say the sound and you repeat. Trade.",
+      },
+      visual: {
+        instructionsPattern: "Look at each letter and say the sound it makes.",
+        materials: [],
+        parentGuidance:
+          "Cover the letter with your finger after they say the sound to confirm they heard the right one.",
+      },
+      story: {
+        instructionsPattern:
+          "Read a short alphabet story together. Pause when a target letter appears.",
+        materials: ["any alphabet picture book you have at home"],
+        parentGuidance:
+          "Don't push for speed. The point is recognition — does the brain hear the sound when the eye sees the letter.",
+      },
+    },
+    assessmentBank: {
+      // Each item is a single-letter tap option — perfect for TTS-tap-to-hear UX.
+      formative: [
+        {
+          questionId: "lsc-f-1",
+          prompt: "Which letter makes the sound 'mmm', like in 'moon'?",
+          type: "choice",
+          options: ["m", "n", "p"],
+          correctAnswer: "m",
+        },
+        {
+          questionId: "lsc-f-2",
+          prompt: "Which letter makes the sound 'sss', like a snake?",
+          type: "choice",
+          options: ["s", "f", "z"],
+          correctAnswer: "s",
+        },
+        {
+          questionId: "lsc-f-3",
+          prompt: "Which letter makes the sound 'buh', like in 'ball'?",
+          type: "choice",
+          options: ["b", "d", "p"],
+          correctAnswer: "b",
+        },
+        {
+          questionId: "lsc-f-4",
+          prompt: "Which letter makes the sound 'tuh', like in 'top'?",
+          type: "choice",
+          options: ["t", "d", "p"],
+          correctAnswer: "t",
+        },
+        {
+          questionId: "lsc-f-5",
+          prompt: "Which letter makes the sound 'aaa', like in 'apple'?",
+          type: "choice",
+          options: ["a", "e", "u"],
+          correctAnswer: "a",
+        },
+      ],
+      checkpoint: [
+        {
+          questionId: "lsc-c-1",
+          prompt: "Which letter makes the sound 'kuh', like in 'cat'?",
+          type: "choice",
+          options: ["c", "g", "q"],
+          correctAnswer: "c",
+        },
+        {
+          questionId: "lsc-c-2",
+          prompt: "Which letter makes the sound 'fuh', like in 'fish'?",
+          type: "choice",
+          options: ["f", "v", "th"],
+          correctAnswer: "f",
+        },
+        {
+          questionId: "lsc-c-3",
+          prompt: "Which letter makes the sound 'lll', like in 'lion'?",
+          type: "choice",
+          options: ["l", "r", "w"],
+          correctAnswer: "l",
+        },
+        {
+          questionId: "lsc-c-4",
+          prompt: "Which letter makes the sound 'ooo', like in 'octopus'?",
+          type: "choice",
+          options: ["o", "u", "a"],
+          correctAnswer: "o",
+        },
+        {
+          questionId: "lsc-c-5",
+          prompt: "Which letter makes the sound 'rrr', like a tiger?",
+          type: "choice",
+          options: ["r", "l", "w"],
+          correctAnswer: "r",
+        },
+      ],
+      challenge: [
+        {
+          questionId: "lsc-ch-1",
+          prompt: "What sound does 'h' make? Pick the word that starts with that sound.",
+          type: "choice",
+          options: ["hat", "cat", "bat"],
+          correctAnswer: "hat",
+        },
+        {
+          questionId: "lsc-ch-2",
+          prompt: "What sound does 'g' make? Pick the word that starts with that sound.",
+          type: "choice",
+          options: ["go", "no", "so"],
+          correctAnswer: "go",
+        },
+        {
+          questionId: "lsc-ch-3",
+          prompt: "What sound does 'j' make? Pick the word that starts with that sound.",
+          type: "choice",
+          options: ["jam", "ham", "ram"],
+          correctAnswer: "jam",
+        },
+        {
+          questionId: "lsc-ch-4",
+          prompt: "What sound does 'w' make? Pick the word that starts with that sound.",
+          type: "choice",
+          options: ["wet", "vet", "set"],
+          correctAnswer: "wet",
+        },
+        {
+          questionId: "lsc-ch-5",
+          prompt: "Which two letters make a vowel sound? (Vowels are a, e, i, o, u.)",
+          type: "choice",
+          options: ["a and e", "b and c", "k and m"],
+          correctAnswer: "a and e",
+        },
+      ],
+    },
+  },
+
+  {
+    subject: "READING",
+    targetSkillName: "CVC Word Reading",
+    gradeBand: "K",
+    objective: "Read 3-letter words by blending the consonant-vowel-consonant sounds.",
+    difficultyLevels: {
+      easy: { customParams: { focusOn: "blend-aloud", wordCount: 3 } },
+      medium: { customParams: { focusOn: "decode-and-pick", wordCount: 5 } },
+      hard: { customParams: { focusOn: "in-sentence", wordCount: 6 } },
+    },
+    modes: {
+      hands_on: {
+        instructionsPattern:
+          "Build CVC words with letter tiles. Slide each letter together as you say its sound, then say the whole word.",
+        materials: ["letter tiles or magnetic letters"],
+        parentGuidance:
+          "Sound out s-l-o-w-l-y the first time. Then have your child blend them faster and faster until the word 'pops out'.",
+      },
+      visual: {
+        instructionsPattern: "Look at each word. Say the sounds. Blend them together.",
+        materials: [],
+        parentGuidance:
+          "Cover all but the first letter, say its sound. Reveal the next letter, say it. Reveal the third. Then sweep your finger across all three and blend.",
+      },
+      story: {
+        instructionsPattern:
+          "Read a short list of CVC words in a silly sentence together.",
+        materials: ["a piece of paper"],
+        parentGuidance:
+          "Make up a goofy sentence using 3-4 CVC words. The point is to read with momentum, not perfection.",
+      },
+    },
+    assessmentBank: {
+      formative: [
+        {
+          questionId: "cvc-f-1",
+          prompt: "Which word do these sounds make? c-a-t",
+          type: "choice",
+          options: ["cat", "cot", "cut"],
+          correctAnswer: "cat",
+        },
+        {
+          questionId: "cvc-f-2",
+          prompt: "Which word do these sounds make? d-o-g",
+          type: "choice",
+          options: ["dig", "dog", "dug"],
+          correctAnswer: "dog",
+        },
+        {
+          questionId: "cvc-f-3",
+          prompt: "Which word do these sounds make? s-u-n",
+          type: "choice",
+          options: ["sin", "son", "sun"],
+          correctAnswer: "sun",
+        },
+        {
+          questionId: "cvc-f-4",
+          prompt: "Which word do these sounds make? p-i-g",
+          type: "choice",
+          options: ["pig", "peg", "pug"],
+          correctAnswer: "pig",
+        },
+      ],
+      checkpoint: [
+        {
+          questionId: "cvc-c-1",
+          prompt: "Read this word out loud: bed. Which is correct?",
+          type: "choice",
+          options: ["bed", "bad", "bid"],
+          correctAnswer: "bed",
+        },
+        {
+          questionId: "cvc-c-2",
+          prompt: "Read this word out loud: top. Which is correct?",
+          type: "choice",
+          options: ["tap", "tip", "top"],
+          correctAnswer: "top",
+        },
+        {
+          questionId: "cvc-c-3",
+          prompt: "Read this word out loud: hat. Which is correct?",
+          type: "choice",
+          options: ["hat", "hut", "hot"],
+          correctAnswer: "hat",
+        },
+        {
+          questionId: "cvc-c-4",
+          prompt: "Read this word out loud: bug. Which is correct?",
+          type: "choice",
+          options: ["big", "bag", "bug"],
+          correctAnswer: "bug",
+        },
+        {
+          questionId: "cvc-c-5",
+          prompt: "Read this word out loud: net. Which is correct?",
+          type: "choice",
+          options: ["net", "not", "nut"],
+          correctAnswer: "net",
+        },
+      ],
+      challenge: [
+        {
+          questionId: "cvc-ch-1",
+          prompt: "Pick the CVC word that means a small animal that says meow.",
+          type: "choice",
+          options: ["cat", "dog", "cow"],
+          correctAnswer: "cat",
+        },
+        {
+          questionId: "cvc-ch-2",
+          prompt: "Pick the CVC word that means a place to sleep.",
+          type: "choice",
+          options: ["bed", "ban", "but"],
+          correctAnswer: "bed",
+        },
+        {
+          questionId: "cvc-ch-3",
+          prompt: "Which sentence uses a real CVC word? 'I see a ___.'",
+          type: "choice",
+          options: ["bag", "bgg", "bzz"],
+          correctAnswer: "bag",
+        },
+        {
+          questionId: "cvc-ch-4",
+          prompt: "Pick the CVC word that means something that flies.",
+          type: "choice",
+          options: ["bug", "log", "rug"],
+          correctAnswer: "bug",
+        },
+        {
+          questionId: "cvc-ch-5",
+          prompt: "Pick the CVC word that rhymes with 'cat'.",
+          type: "choice",
+          options: ["bat", "big", "but"],
+          correctAnswer: "bat",
+        },
+      ],
+    },
+  },
+
+  // ============================================
+  // DIGRAPHS (Grade 1) — depend on Letter-Sound + CVC above
+  // ============================================
   digraphTemplate({
     digraph: "sh",
     pronunciation: "shh",
