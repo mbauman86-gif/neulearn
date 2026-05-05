@@ -138,31 +138,53 @@ async function selectCoreSkills(
     }
   }
 
-  // Prioritize: 
+  // Prioritize:
   // 1. Skills currently in DEVELOPING (continue working on them)
-  // 2. Skills in NOT_STARTED (new skills to introduce)
+  // 2. Skills in NOT_STARTED (new skills to introduce), interleaved by subject
+  //    so no single subject monopolises the limited daily slots just because it
+  //    sorts earlier alphabetically (CHARACTER < MATH < READING).
   const developing = readySkills.filter(s => s.progress?.masteryLevel === "DEVELOPING");
   const notStarted = readySkills.filter(s => !s.progress || s.progress.masteryLevel === "NOT_STARTED");
 
-  // Balance subjects: try to pick from different subjects
   const selected: Skill[] = [];
   const subjectCounts: Record<string, number> = {};
 
-  // First, continue any developing skills
+  // First, continue any developing skills (cap per-subject at 2)
   for (const skill of developing) {
     if (selected.length >= count) break;
-    selected.push(skill);
-    subjectCounts[skill.subject] = (subjectCounts[skill.subject] || 0) + 1;
-  }
-
-  // Then add new skills, balancing subjects
-  for (const skill of notStarted) {
-    if (selected.length >= count) break;
     const subjectCount = subjectCounts[skill.subject] || 0;
-    if (subjectCount < 2) { // Limit to 2 skills per subject per day
+    if (subjectCount < 2) {
       selected.push(skill);
       subjectCounts[skill.subject] = subjectCount + 1;
     }
+  }
+
+  // Then add new skills using round-robin across subjects so every enabled subject
+  // gets a slot before any subject gets a second one.
+  const bySubject: Record<string, SkillWithProgress[]> = {};
+  for (const skill of notStarted) {
+    if (!bySubject[skill.subject]) bySubject[skill.subject] = [];
+    bySubject[skill.subject].push(skill);
+  }
+
+  // Shuffle the subject order each day so the same subject doesn't always go first
+  const subjectOrder = Object.keys(bySubject).sort(() => Math.random() - 0.5);
+
+  let pass = 0;
+  while (selected.length < count) {
+    let addedThisPass = false;
+    for (const subject of subjectOrder) {
+      if (selected.length >= count) break;
+      const subjectCount = subjectCounts[subject] || 0;
+      if (subjectCount >= 2) continue; // already at daily cap for this subject
+      const queue = bySubject[subject];
+      if (!queue || queue.length <= pass) continue;
+      selected.push(queue[pass]);
+      subjectCounts[subject] = subjectCount + 1;
+      addedThisPass = true;
+    }
+    pass++;
+    if (!addedThisPass) break; // no more candidates in any subject
   }
 
   return selected;
