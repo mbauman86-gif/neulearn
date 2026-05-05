@@ -9,6 +9,7 @@
  * Presentational only — accepts a typed queue and child profile via props.
  * Parent route owns the data fetch + handlers.
  */
+import type { ReactNode } from "react";
 import {
   PencilLine,
   Hash,
@@ -62,6 +63,12 @@ export interface TodayCubProps {
   readonly onSaveNew?: () => void;
   readonly onStuck: () => void;
   readonly onBreak: () => void;
+  /**
+   * Optional override rendered in place of the queue + Later shelf when the queue
+   * is empty (everything done for the day, or the parent hasn't generated one yet).
+   * Lets the page show a celebratory closure state inside the same chrome.
+   */
+  readonly emptyState?: ReactNode;
 }
 
 export const DEFAULT_QUEUE_ICONS: Readonly<Record<QueueSection, LucideIcon>> = {
@@ -85,8 +92,10 @@ export function TodayCub({
   onSaveNew,
   onStuck,
   onBreak,
+  emptyState,
 }: TodayCubProps) {
   const greeting = greetingForTimeOfDay();
+  const isEmpty = queue.length === 0;
 
   return (
     <div
@@ -115,35 +124,44 @@ export function TodayCub({
 
       {/* Hero — today's path */}
       <main className="px-4 sm:px-6 mt-6 sm:mt-10 max-w-screen-xl mx-auto">
-        <section className="mb-8 sm:mb-12">
-          <h2 className="font-nl-display italic text-[40px] sm:text-[56px] leading-[1.05] text-nl-ink mb-3">
-            Today's path
-          </h2>
-          <p className="font-nl-reading text-[18px] sm:text-[22px] text-nl-ink-secondary leading-relaxed max-w-md">
-            {queue.length === 1
-              ? "One thing to explore. Take your time."
-              : `${queue.length} things to explore. Take your time.`}
-          </p>
-        </section>
+        {!isEmpty && (
+          <section className="mb-8 sm:mb-12">
+            <h2 className="font-nl-display italic text-[40px] sm:text-[56px] leading-[1.05] text-nl-ink mb-3">
+              Today's path
+            </h2>
+            <p className="font-nl-reading text-[18px] sm:text-[22px] text-nl-ink-secondary leading-relaxed max-w-md">
+              {queue.length === 1
+                ? "One thing to explore. Take your time."
+                : `${queue.length} things to explore. Take your time.`}
+            </p>
+          </section>
+        )}
 
-        {/* The four queue cards */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          {queue.map((item) => (
-            <QueueCard
-              key={item.id}
-              section={item.section}
-              title={item.title}
-              subtitle={item.subtitle}
-              minutes={item.minutes}
-              icon={item.icon}
-              hasAudio={item.hasAudio ?? true}
-              onClick={() => onQueueItemClick(item.id)}
-              onSaveForLater={() => onSaveForLater(item.id)}
-            />
-          ))}
-        </section>
+        {/* Either the queue cards OR (when queue is empty) the parent-supplied
+            empty state — typically TodayCompleteState. */}
+        {isEmpty && emptyState ? (
+          <section className="mt-8">{emptyState}</section>
+        ) : (
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+            {queue.map((item) => (
+              <QueueCard
+                key={item.id}
+                section={item.section}
+                title={item.title}
+                subtitle={item.subtitle}
+                minutes={item.minutes}
+                icon={item.icon}
+                hasAudio={item.hasAudio ?? true}
+                onClick={() => onQueueItemClick(item.id)}
+                onSaveForLater={() => onSaveForLater(item.id)}
+              />
+            ))}
+          </section>
+        )}
 
-        {/* Later shelf — saved-for-later items + a "save new" CTA */}
+        {/* Later shelf — saved-for-later items + a "save new" CTA. Hidden in
+            the empty/end-state so the celebration moment is uncluttered. */}
+        {!isEmpty && (
         <section className="mt-12 sm:mt-16">
           <h4 className="font-nl-display text-[20px] sm:text-[24px] text-nl-ink-secondary mb-5 sm:mb-6">
             Later shelf
@@ -177,6 +195,7 @@ export function TodayCub({
             )}
           </div>
         </section>
+        )}
       </main>
 
       {/* Bottom chrome — swaps-left + I'm stuck + Take a break */}

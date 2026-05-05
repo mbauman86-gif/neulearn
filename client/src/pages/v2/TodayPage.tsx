@@ -13,9 +13,10 @@
  */
 import { useMemo } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/useAuth";
 import { TodayCub, DEFAULT_QUEUE_ICONS, type TodayQueueItem } from "@/components/v2/TodayCub";
+import { TodayCompleteState } from "@/components/v2/primitives/TodayCompleteState";
 import { apiRequest } from "@/lib/queryClient";
 import type { QueueSection } from "@/components/v2/primitives/QueueCard";
 
@@ -45,13 +46,28 @@ const SECTION_MAP: Record<DailyQueueItem["section"], QueueSection> = {
 };
 
 export default function TodayPage() {
-  const { child } = useAuth();
+  const { child, isImpersonating } = useAuth();
   const [, navigate] = useLocation();
   const childId = child?.id;
+  const queryClient = useQueryClient();
 
   const { data: queueData, isLoading } = useQuery<DailyQueueResponse>({
     queryKey: ["/api/daily-queue", childId],
     enabled: !!childId,
+  });
+
+  // Parent-only: regenerate the daily queue when everything's done. Hits the
+  // existing /api/daily-queue/:childId/regenerate endpoint (parent session only —
+  // it'll reject if a kid session somehow tries it).
+  const regenerateMutation = useMutation({
+    mutationFn: async () => {
+      if (!childId) throw new Error("no child");
+      const res = await apiRequest("POST", `/api/daily-queue/${childId}/regenerate`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-queue"] });
+    },
   });
 
   const queue: TodayQueueItem[] = useMemo(() => {
@@ -115,6 +131,17 @@ export default function TodayPage() {
     navigate("/child/login");
   };
 
+  // queue is already filtered to non-completed/non-skipped items; if it's empty,
+  // the kid finished everything for today (or the queue never had anything).
+  // Render a celebratory closure state instead of an empty card grid.
+  const emptyState = (
+    <TodayCompleteState
+      parentMode={isImpersonating}
+      onRegenerate={() => regenerateMutation.mutate()}
+      regenerating={regenerateMutation.isPending}
+    />
+  );
+
   return (
     <TodayCub
       childName={child.name ?? "friend"}
@@ -131,6 +158,7 @@ export default function TodayPage() {
       onSaveForLater={handleSaveForLater}
       onStuck={handleStuck}
       onBreak={handleBreak}
+      emptyState={emptyState}
     />
   );
 }
