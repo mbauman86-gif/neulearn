@@ -12,7 +12,9 @@
  * intervention engine (`server/interventionEngine.ts`) doesn't exist yet — its absence
  * means "I'm stuck" currently just calls a no-op handler.
  */
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { Volume2 } from "lucide-react";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import type { LessonStep } from "../primitives/ProgressChip";
 import { ProgressChip } from "../primitives/ProgressChip";
 import { CurrencyStrip } from "../primitives/CurrencyStrip";
@@ -85,6 +87,21 @@ export function LessonPlayerCub({
   canAdvance = true,
   focalContent,
 }: LessonPlayerCubProps) {
+  const { play: playGoal } = useTextToSpeech({ speed: 0.85 });
+  const playedFor = useRef<string | null>(null);
+
+  // Auto-play the goal text on the Goal step the first time we see this lesson.
+  // For non-readers, the goal is the lesson's first impression — they need to hear
+  // it. The button next to the goal replays on tap.
+  useEffect(() => {
+    const key = `${currentStep}::${goal}`;
+    if (currentStep === "goal" && playedFor.current !== key) {
+      playedFor.current = key;
+      const t = window.setTimeout(() => playGoal(goal), 350);
+      return () => window.clearTimeout(t);
+    }
+  }, [currentStep, goal, playGoal]);
+
   return (
     <div
       className="bg-nl-canvas text-nl-ink font-nl-body min-h-[100dvh] flex flex-col"
@@ -109,9 +126,22 @@ export function LessonPlayerCub({
           className="flex-1 bg-nl-raised rounded-[2rem] shadow-sm relative overflow-hidden flex flex-col p-8 border border-[#E8DFCA]/50"
           aria-label="Lesson canvas"
         >
-          {/* Goal headline — ALWAYS visible at top of canvas */}
-          <div className="max-w-[80%]">
-            <h1 className="font-nl-display italic text-[28px] leading-tight text-nl-ink">
+          {/* Goal headline — ALWAYS visible at top of canvas. Tappable to hear the
+              goal read aloud (auto-played once on first Goal step for non-readers). */}
+          <div className="max-w-[80%] flex items-start gap-3">
+            <button
+              type="button"
+              onClick={() => playGoal(goal)}
+              className="mt-2 shrink-0 w-9 h-9 rounded-full bg-nl-amber-500/10 flex items-center justify-center text-nl-amber-500 hover:bg-nl-amber-500/20 transition-colors"
+              aria-label="Hear the goal again"
+              data-testid="v2-goal-replay"
+            >
+              <Volume2 size={18} />
+            </button>
+            <h1
+              className="font-nl-display italic text-[28px] leading-tight text-nl-ink cursor-pointer"
+              onClick={() => playGoal(goal)}
+            >
               {focalEmphasis && goal.includes(focalEmphasis) ? (
                 <>
                   {goal.split(focalEmphasis)[0]}

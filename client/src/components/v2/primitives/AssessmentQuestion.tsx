@@ -14,8 +14,9 @@
  * incorrect — flash a brief muted-terracotta tone, then let the parent route decide
  * what happens next. No shame.
  */
-import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, X, Volume2 } from "lucide-react";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 
 export interface AssessmentQuestionData {
   readonly questionId: string;
@@ -46,6 +47,20 @@ export function AssessmentQuestion({
 }: AssessmentQuestionProps) {
   const [submittedAnswer, setSubmittedAnswer] = useState<string | null>(null);
   const [submittedCorrect, setSubmittedCorrect] = useState<boolean | null>(null);
+  const { play } = useTextToSpeech({ speed: 0.85 });
+  const promptPlayedFor = useRef<string | null>(null);
+
+  // Auto-play the prompt the first time this question shows. Critical for non-readers:
+  // they hear the question without needing to decode it. Tapping the prompt or its
+  // speaker icon replays it.
+  useEffect(() => {
+    if (promptPlayedFor.current !== question.questionId) {
+      promptPlayedFor.current = question.questionId;
+      // Slight delay so the canvas-transition settles before audio fires.
+      const t = window.setTimeout(() => play(question.prompt), 250);
+      return () => window.clearTimeout(t);
+    }
+  }, [question.questionId, question.prompt, play]);
 
   function handle(answer: string) {
     if (disabled || submittedAnswer !== null) return;
@@ -69,12 +84,24 @@ export function AssessmentQuestion({
       className="flex flex-col items-center gap-6 w-full max-w-xl"
       data-testid="v2-assessment-question"
     >
-      <p
-        className="font-nl-reading text-[24px] sm:text-[28px] leading-relaxed text-nl-ink text-center max-w-[28ch]"
-        style={{ wordSpacing: "0.05em", letterSpacing: "0.01em" }}
-      >
-        {question.prompt}
-      </p>
+      <div className="flex items-start gap-3 max-w-[32ch]">
+        <button
+          type="button"
+          onClick={() => play(question.prompt)}
+          className="mt-1 shrink-0 w-9 h-9 rounded-full bg-nl-amber-500/10 flex items-center justify-center text-nl-amber-500 hover:bg-nl-amber-500/20 transition-colors"
+          aria-label="Hear the question again"
+          data-testid="v2-assessment-prompt-replay"
+        >
+          <Volume2 size={18} />
+        </button>
+        <p
+          className="font-nl-reading text-[24px] sm:text-[28px] leading-relaxed text-nl-ink text-center cursor-pointer select-none"
+          style={{ wordSpacing: "0.05em", letterSpacing: "0.01em" }}
+          onClick={() => play(question.prompt)}
+        >
+          {question.prompt}
+        </p>
+      </div>
 
       {options.length > 0 && (
         <div
@@ -100,30 +127,47 @@ export function AssessmentQuestion({
                   : "border-black/5 hover:border-nl-amber-500/40";
 
             return (
-              <button
-                key={`${opt}-${i}`}
-                type="button"
-                onClick={() => handle(opt)}
-                disabled={disabled || submittedAnswer !== null}
-                className={`${baseClass} ${stateClass}`}
-                data-testid={`v2-assessment-option-${i}`}
-              >
-                <span className="block">{opt}</span>
-                {showCorrect && (
-                  <Check
-                    size={20}
-                    className="absolute top-2 right-2 text-nl-moss-500"
-                    aria-label="Correct"
-                  />
-                )}
-                {showWrong && (
-                  <X
-                    size={20}
-                    className="absolute top-2 right-2 text-nl-error"
-                    aria-label="Not quite"
-                  />
-                )}
-              </button>
+              <div key={`${opt}-${i}`} className="relative">
+                <button
+                  type="button"
+                  onClick={() => handle(opt)}
+                  disabled={disabled || submittedAnswer !== null}
+                  className={`${baseClass} ${stateClass} pl-14`}
+                  data-testid={`v2-assessment-option-${i}`}
+                >
+                  <span className="block">{opt}</span>
+                  {showCorrect && (
+                    <Check
+                      size={20}
+                      className="absolute top-2 right-2 text-nl-moss-500"
+                      aria-label="Correct"
+                    />
+                  )}
+                  {showWrong && (
+                    <X
+                      size={20}
+                      className="absolute top-2 right-2 text-nl-error"
+                      aria-label="Not quite"
+                    />
+                  )}
+                </button>
+                {/* Speaker icon — tap to hear the option without committing. Sits on
+                    top of the option button (its own click target). Critical for
+                    non-readers who need to hear each choice before picking. */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    play(opt);
+                  }}
+                  disabled={disabled}
+                  className="absolute top-1/2 -translate-y-1/2 left-3 w-9 h-9 rounded-full bg-nl-amber-500/10 hover:bg-nl-amber-500/25 flex items-center justify-center text-nl-amber-500 transition-colors"
+                  aria-label={`Hear option: ${opt}`}
+                  data-testid={`v2-assessment-option-${i}-speaker`}
+                >
+                  <Volume2 size={16} />
+                </button>
+              </div>
             );
           })}
         </div>
